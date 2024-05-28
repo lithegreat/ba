@@ -1,0 +1,6 @@
+[submodule "openasip"]
+	path = openasip
+	url = https://github.com/cpc/openasip
+[submodule "etiss"]
+	path = etiss
+	url = https://github.com/tum-ei-eda/etiss
