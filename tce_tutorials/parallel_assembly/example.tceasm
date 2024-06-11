@@ -1,0 +1,63 @@
+# Following example calculates 
+# mem(0)*mem(1)^6
+#
+# The purpose of this example is to
+# get familiar with assembler syntax
+
+CODE;
+
+:global example;
+:global init;
+:global kernel;
+
+
+:procedure example;
+
+example:
+     
+init:
+#################################################################################################
+#            bus1                             bus2                           bus3  
+#################################################################################################
+0 -> fu_add.t.add              , 0 -> fu_add.o                ,               ...               ;
+fu_add.r.add -> fu_ld_st.t.ldq , fu_add.r.add -> fu_add.t.add ,      1 -> fu_add.o              ;
+fu_add.r.add -> fu_ld_st.t.ldq ,              ...             ,               ...               ;
+             ...               ,              ...             ,               ...               ;
+             ...               ,              ...             , fu_ld_st.r.ldq -> RF_integer1.0 ;
+0 -> fu_add.t.add              , 6 -> fu_comp.o               , fu_ld_st.r.ldq -> RF_integer2.0 ;
+
+kernel:
+######################################################################################################
+#           bus1                             bus2                                         bus3                    
+######################################################################################################
+RF_integer1.0 -> fu_mul.t.mul , RF_integer2.0 -> fu_mul.o    , fu_add.r.add -> fu_comp.t.eq [i1.0=kernel];
+fu_add.r.add  -> fu_add.t.add ,               ...            , !fu_comp.r.eq i1.0->gcu.pc.jump  ;
+fu_mul.r.mul  -> RF_integer1.0,               ...            ,              ...                 ;
+              ...             ,               ...            ,              ...                 ;
+              ...             ,               ...            ,              ...                 ;
+
+####
+# Write result to memory
+####
+fu_mul.r.mul -> fu_ld_st.o.stq, 2 -> fu_ld_st.t.stq          ,             ...                  ;
+             ...              ,                ...           ,             ...                  ;
+             ...              ,                ...           ,             ...                  ;
+             ...              ,                ...           ,             ...                  ;
+
+# initialization to memory
+DATA IODATA 0 ;
+
+DA 2
+1:0x0001
+1:0x0002;
+
+	
+
+
+
+
+
+
+
+
+
