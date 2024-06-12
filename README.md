@@ -5,7 +5,7 @@
 The goal of this project is to evaluate the large pool of custom operations supported by the
 OpenASIP2.0 Co-Design toolchain on our instruction set simulator (ISS) named ETISS using the
 CoreDSL ecosystem.
-Steps:
+### Steps:
 
 - [ ] 1. Literature Research
 - [ ] 2. Familiarize with involved tools (OpenASIP, CoreDSL, CoreDSL)
@@ -15,7 +15,26 @@ Steps:
 - [ ] 6. Evaluate/Test/Benchmark the custom operations
 - [ ] 7. Optional: Allow ETISS to be used as OpenASIP2.0 target architecture.
 
-Related Literature/Tools:
+#### week 1-4:
+- literature (openasip papers and previous work regarding operation set customization and TTA vs. operational triggering)
+- learn how to use opensip (Open ASIP Tour), setup M2-ISA-R to convert coredsl2 files into etiss patches, complie and run programs with etiss simulator
+
+#### week 5-10:
+- implementation (sketch + proof of concept first, then coding)
+
+#### week 11-12:
+- buffer
+
+#### week 13-16:
+- testing
+- evaluation
+- experiments
+
+#### week 17-20:
+- writing thesis
+- prepare slides
+
+### Related Literature/Tools:
 - [Extended Abstract: A Flexible Simulation Environment for RISC-V](<reference/Reference Paper/2023-06-07-Karsten-EMRICH-abstract.pdf>)
 - [The Extendable Translating Instruction Set Simulator (ETISS) interlinked with an MDA Framework for fast RISC Prototyping](<reference/Reference Paper/The_extendable_translating_instruction_set_simulat.pdf>)
 - https://github.com/tum-ei-eda/etiss
