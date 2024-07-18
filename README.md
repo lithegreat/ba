@@ -7,8 +7,8 @@ OpenASIP2.0 Co-Design toolchain on our instruction set simulator (ISS) named ETI
 CoreDSL ecosystem.
 ### Steps:
 
-- [ ] 1. Literature Research
-- [ ] 2. Familiarize with involved tools (OpenASIP, CoreDSL, CoreDSL)
+- [X] 1. Literature Research
+- [X] 2. Familiarize with involved tools (OpenASIP, CoreDSL, CoreDSL)
 - [ ] 3. Collect list of all custom OpenASIP operations
 - [ ] 4. Develop methodology for translating the custom OpenASIP operations to the CoreDSL syntax
 - [ ] 5. Generate ETISS architectures using the new instructions
