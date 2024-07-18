@@ -1,2 +1,0 @@
-x /a IODATA /n 64 /u b 0
-exit
