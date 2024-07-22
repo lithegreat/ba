@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 
 # Define the directory containing the .oop files
-directory = '/home/lithegreat/local/share/openasip/opset/base'
+directory = 'openasip/openasip/opset/base'
 
 # Loop through all files in the directory
 for filename in os.listdir(directory):
