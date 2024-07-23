@@ -9,7 +9,7 @@ CoreDSL ecosystem.
 
 - [X] 1. Literature Research
 - [X] 2. Familiarize with involved tools (OpenASIP, CoreDSL, CoreDSL)
-- [ ] 3. Collect list of all custom OpenASIP operations
+- [X] 3. Collect list of all custom OpenASIP operations
 - [ ] 4. Develop methodology for translating the custom OpenASIP operations to the CoreDSL syntax
 - [ ] 5. Generate ETISS architectures using the new instructions
 - [ ] 6. Evaluate/Test/Benchmark the custom operations
@@ -17,7 +17,7 @@ CoreDSL ecosystem.
 
 #### week 1-4:
 - literature (openasip papers and previous work regarding operation set customization and TTA vs. operational triggering)
-- learn how to use opensip (Open ASIP Tour), setup M2-ISA-R to convert coredsl2 files into etiss patches, complie and run programs with etiss simulator
+- learn how to use opensip (Open ASIP Tour), setup M2-ISA-R to convert coredsl2 files into etiss patches, compile and run programs with etiss simulator
 
 #### week 5-10:
 - implementation (sketch + proof of concept first, then coding)
