@@ -1,0 +1,1376 @@
+InstructionSet OpenASIP_base extends RV32I {
+    instructions {
+        // Array indexing for 16-bit data types
+        SHL1ADD {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHL1ADD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Array indexing for 32-bit data types
+        SHL2ADD {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHL2ADD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Integer addition. Output 3 is sum of inputs 1 and 2.
+        ADD {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ADD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Integer subtraction. Input 1 is minuend,  input 2 is subtrahend and output 3 is difference.
+        SUB {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SUB", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Equality comparison. Output 3 returns '1' if inputs 1 and 2 are equal and otherwise returns '0'.
+        EQ {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.EQ", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater-than signed integer comparison. 
+Output returns '1' if input 1 is greater than input 2 and otherwise returns '0'.
+        GT {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GT", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater-than unsigned integer comparison. Output returns '1' if input 1 is greater than input 2 and otherwise returns '0'.
+        GTU {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GTU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less-than signed integer comparison.
+        LT {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LT", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less-than unsigned integer comparison.
+        LTU {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LTU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Not equal signed integer comparison.
+        NE {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.NE", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater or equal signed integer comparison.
+        GE {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GE", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater or equal unsigned integer comparison.
+        GEU {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GEU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less or equal signed integer comparison.
+        LE {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LE", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less or equal unsigned integer comparison.
+        LEU {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LEU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Left logical shift. Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
+        SHL {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<2> rs2 [[reg_type=u5]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHL", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Left logical shift by 1. Input 1 is value to be shifted and Output 2 is result from operation.
+        SHL1_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHL1_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Left logical shift by 2. Input 1 is value to be shifted and Output 2 is result from operation.
+        SHL2_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHL2_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Left logical shift by 4. Input 1 is value to be shifted and Output 2 is result from operation.
+        SHL4_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHL4_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Left logical shift by 8. Input 1 is value to be shifted and Output 2 is result from operation.
+        SHL8_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHL8_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Left logical shift by 16. Input 1 is value to be shifted and Output 2 is result from operation.
+        SHL16_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHL16_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Arithmetic shift right (sign bit duplicated). Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
+        SHR {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<2> rs2 [[reg_type=u5]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Arithmetic shift right by one bit.
+        SHR1_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHR1_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Arithmetic shift right by two bits.
+        SHR2_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHR2_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Arithmetic shift right by four bits
+        SHR4_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHR4_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Arithmetic shift right by eight bits.
+        SHR8_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHR8_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Arithmetic shift right by 16 bits.
+        SHR16_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHR16_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Logical shift right (most siginificant bits zeroed). Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
+        SHRU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<2> rs2 [[reg_type=u5]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHRU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Logical shift right by one bit.
+        SHRU1_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHRU1_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Logical shift right by two bits
+        SHRU2_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHRU2_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Logical shift right by four bits
+        SHRU4_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHRU4_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Logical shift right by eight bits
+        SHRU8_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHRU8_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Logical shift right by 16 bits
+        SHRU16_32 {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SHRU16_32", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Bitwise AND. Operands 1 and 2 are inputs and 3 is output result.
+        AND {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.AND", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Inclusive OR. Operands 1 and 2 are inputs and 3 is output result.
+        IOR {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.IOR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Exclusive OR. Operands 1 and 2 are inputs and 3 is output result.
+        XOR {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.XOR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns the smaller of the two signed integer values. Operands 1 and 2 are inputs and 3 is output result.
+        MIN {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MIN", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns the larger of the two signed input values. Operands 1 and 2 are inputs and 3 is output result.
+        MAX {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MAX", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns the smaller of the two unsigned input values.
+        MINU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MINU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns the larger of the two unsigned input values.
+        MAXU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MAXU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // sign extend from 1 bit to 32 bits
+        SXBW {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<0> rs1 [[reg_type=u1]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SXBW", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Sign extend from 8 bits of the input 1 to 32 bits into output 2.
+        SXQW {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<3> rs1 [[reg_type=u8]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SXQW", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Sign extend from 16 bits of of the input 1 to 32 bits into output 2.
+        SXHW {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SXHW", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // truncate 32 bit int to 16 bit int
+        TRUNCWH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.TRUNCWH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Arithmetic negation, signed integer.
+        NEG {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.NEG", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Arithmetic negation, floating-point.
+        NEGF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.NEGF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Arithmetic negation, half floating-point.
+        NEGH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.NEGH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns the larger of the two floating-point input values.
+        MAXF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MAXF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns the smaller of the two floating-point input values.
+        MINF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MINF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns the larger of the two half floating-point input values.
+        MAXH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MAXH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns the smaller of the two half floating-point input values.
+        MINH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MINH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // 32-bit integer multiplication of the inputs 1 and 2 with lower result bits in the output 3.
+        MUL {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MUL", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // 32-bit integer multiplication of the signed inputs 1 and 2 with higher result bits in the output 3.
+        MULHI {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MULHI", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // 32-bit integer multiplication of the unsigned inputs 1 and 2 with higher result bits in the output 3.
+        MULHIU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MULHIU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // 32-bit integer multiplication of the signed input 1 and unsigned input 2 with higher result bits in the output 3.
+        MULHISU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MULHISU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Integer division.
+        DIV {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.DIV", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Unsigned integer division.
+        DIVU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.DIVU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Floating-point addition. Output 3 is sum of inputs 1 and 2.
+        ADDF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ADDF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Floating-point substraction.
+        SUBF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SUBF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // 32-bit floating-point multiplication
+        MULF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MULF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Floating-point division.
+        DIVF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.DIVF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Floating-point compare equal (ordered).
+        EQF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.EQF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Not equal floating-point comparison (ordered).
+        NEF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.NEF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater-than floating-point comparison.
+        GTF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GTF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater or equal floating-point comparison.
+        GEF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GEF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less-than floating-point comparison.
+        LTF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LTF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less or equal floating-point comparison.
+        LEF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LEF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Floating-point compare equal (unordered).
+        EQUF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.EQUF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Not equal floating-point comparison (unordered).
+        NEUF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.NEUF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater-than floating-point comparison (unordered).
+        GTUF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GTUF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater or equal floating-point comparison (unordered).
+        GEUF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GEUF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less-than floating-point comparison (unordered).
+        LTUF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LTUF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less or equal floating-point comparison (unordered).
+        LEUF {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LEUF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Half precision floating-point addition. Output 3 is sum of inputs 1 and 2.
+        ADDH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ADDH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Half floating-point substraction.
+        SUBH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SUBH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // 16-bit floating-point multiplication.
+        MULH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MULH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Half float division.
+        DIVH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.DIVH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Multiply and accumulate (half floating-point).
+        MACH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MACH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Multiply and substract (half floating-point).
+        MSUH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MSUH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Multiply and accumulate (floating-point).
+        MACF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MACF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Multiply and substract (floating-point).
+        MSUF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MSUF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Multiply and accumulate (signed integer).
+        MAC {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MAC", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Half floating-point compare equal.
+        EQH {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.EQH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Not equal half floating-point comparison.
+        NEH {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.NEH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Not equal half floating-point comparison (unordered).
+        NEUH {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.NEUH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater-than half floating-point comparison.
+        GTH {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GTH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Greater or equal half floating-point comparison.
+        GEH {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.GEH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less-than half floating-point comparison.
+        LTH {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LTH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Less or equal half floating-point comparison.
+        LEH {
+            operands: {
+                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                unsigned<4> rs2 [[reg_type=u16]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LEH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts floating-point to integer.
+        CFI {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CFI", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts floating-point to unsigned integer.
+        CFIU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CFIU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts integer to float.
+        CIF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CIF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts unsigned integer to floating-point.
+        CIFU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CIFU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts half floating-point to signed integer.
+        CHI {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CHI", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts half floating-point to unsigned integer.
+        CHIU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CHIU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts integer to half floating-point.
+        CIH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CIH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts unsigned integer to half floating-point.
+        CIHU {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CIHU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts half precision floating-point to single precision.
+        CHF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CHF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Converts single precision floating-point to half.
+        CFH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CFH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Rotate left.
+        ROTL {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ROTL", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Rotate right.
+        ROTR {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ROTR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Absolute value.
+        ABS {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ABS", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Floating-point absolute value.
+        ABSF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ABSF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Half precision floating-point absolute value.
+        ABSH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ABSH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Integer modulo.
+        MOD {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MOD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Integer remainder.
+        REM {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.REM", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Integer modulo (unsigned)
+        MODU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.MODU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Integer remainder (unsigned)
+        REMU {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.REMU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Bitwise negation.
+        NOT {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.NOT", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Does a bitwise negation (NOT) on the 2nd input followed by AND of the 1st input and the negated 2nd output. Special instruction in TI C64X.
+        ANDN {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ANDN", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Leftmost Bit Detection (from TI C64X). Counts the number of 0's or 1's in the bit representation of operand 1 before the first 1 or 0. 2nd operand is used to tell whether to search for a 0 or 1.
+        LMBD {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LMBD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // The "default streaming" operation for querying input buffer status.
+
+Trigger with 0.
+
+Return an integer with the following meanings:
+
+0 = buffer empty
+1 = not empty nor full (implies a buffer size > 1 sample and that there is at least one sample in the buffer)
+2 = buffer full
+
+This operation allows handling stream buffer underflow without a global lock, thus allows doing something useful (run another thread, for example) while the buffer is empty.
+        STREAM_IN_STATUS {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.STREAM_IN_STATUS", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns 1 if floating point input operands are ordered. i.e. neither of the input operands is NaN.
+
+
+        ORDF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.ORDF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Returns 1 if the two floating point operands are unordered. i.e. isNaN(io1) || isNan(io2).
+
+
+        UORDF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.UORDF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Performs a square root of a single precision floating point. For example, the MIPS R4000 FPU implements it.
+
+        SQRTF {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SQRTF", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Performs a square root of a half precision floating point.
+    
+        SQRTH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SQRTH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Performs a inverse square root of a half-precision floating point.
+
+        INVSQRTH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.INVSQRTH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Computes the square of a half-precision floating point.
+
+        SQUAREH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SQUAREH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Control leds by writing a bit pattern. Bit 1 switches a led on and 0 switches off.
+        LEDS {
+            operands: {
+                unsigned<0> rd [[reg_type=u16]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.LEDS", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Select one of two values
+        SELECT {
+            operands: {
+                unsigned<5> rd [[reg_type=u32]] [[out]];
+                unsigned<5> rs1 [[reg_type=u32]] [[in]];
+                unsigned<5> rs2 [[reg_type=u32]] [[in]];
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.SELECT", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Convert half to short
+        CHS {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CHS", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Convert half to short unsigned
+        CHSU {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CHSU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Convert short to half
+        CSH {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CSH", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+        // Convert short to half unsigned
+        CSHU {
+            operands: {
+                unsigned<4> rd [[reg_type=u16]] [[out]];
+                unsigned<4> rs1 [[reg_type=u16]] [[in]];
+                // rs2 operand not specified in input
+            }
+            encoding: auto;
+            assembly: {"OpenASIP_base.CSHU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
+            behavior: {};
+        }
+    }
+}
