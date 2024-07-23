@@ -154,9 +154,9 @@ class OperationParser:
         max_outputs=1,
         min_element_width=0,
         max_element_width=32,
-        is_control_flow=False,
-        is_call=False,
-        is_branch=False,
+        no_control_flow=False,
+        no_call=False,
+        no_branch=False,
         is_element_count_1=False,
         no_side_effects=False,
         no_memory_reads=False,
@@ -190,14 +190,14 @@ class OperationParser:
             mask &= df_operations["outputs"].fillna(0).astype(int) >= min_outputs
             mask &= df_operations["outputs"].fillna(0).astype(int) <= max_outputs
 
-            if is_control_flow:
-                mask &= df_operations["control_flow"]
+            if no_control_flow:
+                mask &= ~df_operations["control_flow"]
 
-            if is_call:
-                mask &= df_operations["is_call"]
+            if no_call:
+                mask &= ~df_operations["is_call"]
 
-            if is_branch:
-                mask &= df_operations["is_branch"]
+            if no_branch:
+                mask &= ~df_operations["is_branch"]
 
             if is_element_count_1:
                 for i in range(1, max(2, max_inputs) + 1):
@@ -255,15 +255,15 @@ if __name__ == "__main__":
         "--max-element-width", type=int, default=32, help="Maximum element width"
     )
     parser.add_argument(
-        "--is-control-flow",
+        "--no-control-flow",
         action="store_true",
-        help="Only include control flow operations",
+        help="Exclude control flow operations",
     )
     parser.add_argument(
-        "--is-call", action="store_true", help="Only include call operations"
+        "--no-call", action="store_true", help="Exclude call operations"
     )
     parser.add_argument(
-        "--is-branch", action="store_true", help="Only include branch operations"
+        "--no-branch", action="store_true", help="Exclude branch operations"
     )
     parser.add_argument(
         "--is-element-count-1",
@@ -312,9 +312,9 @@ if __name__ == "__main__":
             max_outputs=args.max_outputs,
             min_element_width=args.min_element_width,
             max_element_width=args.max_element_width,
-            is_control_flow=args.is_control_flow,
-            is_call=args.is_call,
-            is_branch=args.is_branch,
+            no_control_flow=args.no_control_flow,
+            no_call=args.no_call,
+            no_branch=args.no_branch,
             is_element_count_1=args.is_element_count_1,
             no_side_effects=args.no_side_effects,
             no_memory_reads=args.no_memory_reads,

@@ -32,15 +32,15 @@ def main():
         "--max-element-width", type=int, default=32, help="Maximum element width"
     )
     parser.add_argument(
-        "--is-control-flow",
+        "--no-control-flow",
         action="store_true",
-        help="Only include control flow operations",
+        help="Exclude control flow operations",
     )
     parser.add_argument(
-        "--is-call", action="store_true", help="Only include call operations"
+        "--no-call", action="store_true", help="Exclude call operations"
     )
     parser.add_argument(
-        "--is-branch", action="store_true", help="Only include branch operations"
+        "--no-branch", action="store_true", help="Exclude branch operations"
     )
     parser.add_argument(
         "--is-element-count-1",
@@ -89,9 +89,9 @@ def main():
             max_outputs=args.max_outputs,
             min_element_width=args.min_element_width,
             max_element_width=args.max_element_width,
-            is_control_flow=args.is_control_flow,
-            is_call=args.is_call,
-            is_branch=args.is_branch,
+            no_control_flow=args.no_control_flow,
+            no_call=args.no_call,
+            no_branch=args.no_branch,
             is_element_count_1=args.is_element_count_1,
             no_side_effects=args.no_side_effects,
             no_memory_reads=args.no_memory_reads,
