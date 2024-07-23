@@ -1,1 +1,111 @@
+import os
+import argparse
 from oppToTable import OperationParser
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Parse and filter XML operation files."
+    )
+    parser.add_argument(
+        "--directory",
+        type=str,
+        default="openasip/openasip/opset/base",
+        help="Directory containing .opp files",
+    )
+    parser.add_argument(
+        "--min-inputs", type=int, default=0, help="Minimum number of inputs"
+    )
+    parser.add_argument(
+        "--max-inputs", type=int, default=3, help="Maximum number of inputs"
+    )
+    parser.add_argument(
+        "--min-outputs", type=int, default=0, help="Minimum number of outputs"
+    )
+    parser.add_argument(
+        "--max-outputs", type=int, default=1, help="Maximum number of outputs"
+    )
+    parser.add_argument(
+        "--min-element-width", type=int, default=0, help="Minimum element width"
+    )
+    parser.add_argument(
+        "--max-element-width", type=int, default=32, help="Maximum element width"
+    )
+    parser.add_argument(
+        "--is-control-flow",
+        action="store_true",
+        help="Only include control flow operations",
+    )
+    parser.add_argument(
+        "--is-call", action="store_true", help="Only include call operations"
+    )
+    parser.add_argument(
+        "--is-branch", action="store_true", help="Only include branch operations"
+    )
+    parser.add_argument(
+        "--is-element-count-1",
+        action="store_true",
+        help="Only include operations with element count 1",
+    )
+    parser.add_argument(
+        "--no-side-effects",
+        action="store_true",
+        help="Exclude operations with side effects",
+    )
+    parser.add_argument(
+        "--no-memory-reads",
+        action="store_true",
+        help="Exclude operations that read memory",
+    )
+    parser.add_argument(
+        "--no-memory-writes",
+        action="store_true",
+        help="Exclude operations that write memory",
+    )
+    parser.add_argument(
+        "--skip-filters",
+        action="store_true",
+        help="Skip all filters and output all operations",
+    )
+    parser.add_argument(
+        "--output-directory",
+        type=str,
+        default="./Operations",
+        help="Directory to save filtered results",
+    )
+
+    args = parser.parse_args()
+
+    operation_parser = OperationParser(directory=args.directory)
+    operation_parser.load_operations()
+
+    if args.skip_filters:
+        filtered_operations = operation_parser.operations
+    else:
+        filtered_operations = operation_parser.filter_operations(
+            min_inputs=args.min_inputs,
+            max_inputs=args.max_inputs,
+            min_outputs=args.min_outputs,
+            max_outputs=args.max_outputs,
+            min_element_width=args.min_element_width,
+            max_element_width=args.max_element_width,
+            is_control_flow=args.is_control_flow,
+            is_call=args.is_call,
+            is_branch=args.is_branch,
+            is_element_count_1=args.is_element_count_1,
+            no_side_effects=args.no_side_effects,
+            no_memory_reads=args.no_memory_reads,
+            no_memory_writes=args.no_memory_writes,
+        )
+
+    for filename, df_operations in filtered_operations.items():
+        output_directory = args.output_directory
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+
+        output_filepath = os.path.join(output_directory, f"{filename}.xlsx")
+        df_operations.to_excel(output_filepath, index=False)
+        print(f"Saved {filename}.xlsx to {output_filepath}")
+
+if __name__ == "__main__":
+    main()
