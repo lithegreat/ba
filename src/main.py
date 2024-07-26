@@ -1,11 +1,12 @@
 import os
 import argparse
 from oppToTable import OperationParser
+from gen_op_coredsl import generate_instruction_set
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Parse and filter XML operation files."
+        description="Parse and filter XML operation files. Generate instruction set from Excel file."
     )
     parser.add_argument(
         "--directory",
@@ -88,6 +89,12 @@ def main():
         default="./Operations",
         help="Directory to save filtered results",
     )
+    parser.add_argument(
+        "--filename",
+        type=str,
+        default="base",
+        help="Filename for the instruction set",
+    )
 
     args = parser.parse_args()
 
@@ -125,6 +132,13 @@ def main():
         df_operations.to_excel(output_filepath, index=False)
         print(f"Saved {filename}.xlsx to {output_filepath}")
 
+    filename = args.filename
+    input_filepath = (
+        f"Operations/{filename}.xlsx"  # Replace with your input Excel file path
+    )
+    output_directory = "Operations"  # Replace with desired output directory
+
+    generate_instruction_set(input_filepath, output_directory)
 
 if __name__ == "__main__":
     main()
