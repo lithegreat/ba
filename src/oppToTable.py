@@ -132,7 +132,9 @@ class OperationParser:
 
             # Extract the filename (without extension)
             filename = os.path.splitext(os.path.basename(filepath))[0]
-            self.operations[filename] = pd.DataFrame(operations)  # Store operations as a DataFrame
+            self.operations[filename] = pd.DataFrame(
+                operations
+            )  # Store operations as a DataFrame
 
         except (FileNotFoundError, ET.ParseError) as e:
             print(f"Error parsing {filepath}: {e}")
@@ -172,17 +174,29 @@ class OperationParser:
             for i in range(1, max(2, max_inputs) + 1):
                 col_name = f"io_{i}_element_width"
                 if col_name in df_operations.columns:
-                    df_operations[col_name] = df_operations[col_name].replace('', '-1')
-                    mask &= df_operations[col_name].fillna(0).astype(int) >= min_element_width
-                    mask &= df_operations[col_name].fillna(0).astype(int) <= max_element_width
+                    df_operations[col_name] = df_operations[col_name].replace("", "-1")
+                    mask &= (
+                        df_operations[col_name].fillna(0).astype(int)
+                        >= min_element_width
+                    )
+                    mask &= (
+                        df_operations[col_name].fillna(0).astype(int)
+                        <= max_element_width
+                    )
 
             # Filter based on outputs
             for i in range(1, max(2, max_outputs) + 1):
                 col_name = f"oo_{i}_element_width"
                 if col_name in df_operations.columns:
-                    df_operations[col_name] = df_operations[col_name].replace('', '-1')
-                    mask &= df_operations[col_name].fillna(0).astype(int) >= min_element_width
-                    mask &= df_operations[col_name].fillna(0).astype(int) <= max_element_width
+                    df_operations[col_name] = df_operations[col_name].replace("", "-1")
+                    mask &= (
+                        df_operations[col_name].fillna(0).astype(int)
+                        >= min_element_width
+                    )
+                    mask &= (
+                        df_operations[col_name].fillna(0).astype(int)
+                        <= max_element_width
+                    )
 
             # Additional filters
             mask &= df_operations["inputs"].fillna(0).astype(int) >= min_inputs
