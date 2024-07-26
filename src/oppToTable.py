@@ -163,6 +163,9 @@ class OperationParser:
         no_side_effects=False,
         no_memory_reads=False,
         no_memory_writes=False,
+        no_HalfFloatWord=False,
+        no_FloatWord=False,
+        no_RawData=False,
     ):
         filtered_operations = {}
 
@@ -172,29 +175,37 @@ class OperationParser:
 
             # Filter based on inputs
             for i in range(1, max(2, max_inputs) + 1):
-                col_name = f"io_{i}_element_width"
+                col_name = f"io_{i}_type"
                 if col_name in df_operations.columns:
-                    df_operations[col_name] = df_operations[col_name].replace("", "-1")
-                    mask &= (
-                        df_operations[col_name].fillna(0).astype(int)
-                        >= min_element_width
-                    )
-                    mask &= (
-                        df_operations[col_name].fillna(0).astype(int)
-                        <= max_element_width
-                    )
+                    if no_HalfFloatWord:
+                        mask &= df_operations[col_name] != "HalfFloatWord"
+                    if no_FloatWord:
+                        mask &= df_operations[col_name] != "FloatWord"
+                    if no_RawData:
+                        mask &= df_operations[col_name] != "RawData"
 
             # Filter based on outputs
             for i in range(1, max(2, max_outputs) + 1):
-                col_name = f"oo_{i}_element_width"
+                col_name = f"oo_{i}_type"
                 if col_name in df_operations.columns:
-                    df_operations[col_name] = df_operations[col_name].replace("", "-1")
+                    if no_HalfFloatWord:
+                        mask &= df_operations[col_name] != "HalfFloatWord"
+                    if no_FloatWord:
+                        mask &= df_operations[col_name] != "FloatWord"
+                    if no_RawData:
+                        mask &= df_operations[col_name] != "RawData"
+
+                col_name_width = f"oo_{i}_element_width"
+                if col_name_width in df_operations.columns:
+                    df_operations[col_name_width] = df_operations[
+                        col_name_width
+                    ].replace("", "-1")
                     mask &= (
-                        df_operations[col_name].fillna(0).astype(int)
+                        df_operations[col_name_width].fillna(0).astype(int)
                         >= min_element_width
                     )
                     mask &= (
-                        df_operations[col_name].fillna(0).astype(int)
+                        df_operations[col_name_width].fillna(0).astype(int)
                         <= max_element_width
                     )
 
@@ -300,6 +311,21 @@ if __name__ == "__main__":
         help="Exclude operations that write memory",
     )
     parser.add_argument(
+        "--no-HalfFloatWord",
+        action="store_true",
+        help="Exclude operations with type HalfFloatWord",
+    )
+    parser.add_argument(
+        "--no-FloatWord",
+        action="store_true",
+        help="Exclude operations with type FloatWord",
+    )
+    parser.add_argument(
+        "--no-RawData",
+        action="store_true",
+        help="Exclude operations with type RawData",
+    )
+    parser.add_argument(
         "--skip-filters",
         action="store_true",
         help="Skip all filters and output all operations",
@@ -333,6 +359,9 @@ if __name__ == "__main__":
             no_side_effects=args.no_side_effects,
             no_memory_reads=args.no_memory_reads,
             no_memory_writes=args.no_memory_writes,
+            no_HalfFloatWord=args.no_HalfFloatWord,
+            no_FloatWord=args.no_FloatWord,
+            no_RawData=args.no_RawData,
         )
 
     for filename, df_operations in filtered_operations.items():

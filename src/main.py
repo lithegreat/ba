@@ -63,6 +63,21 @@ def main():
         help="Exclude operations that write memory",
     )
     parser.add_argument(
+        "--no-HalfFloatWord",
+        action="store_true",
+        help="Exclude operations with type HalfFloatWord",
+    )
+    parser.add_argument(
+        "--no-FloatWord",
+        action="store_true",
+        help="Exclude operations with type FloatWord",
+    )
+    parser.add_argument(
+        "--no-RawData",
+        action="store_true",
+        help="Exclude operations with type RawData",
+    )
+    parser.add_argument(
         "--skip-filters",
         action="store_true",
         help="Skip all filters and output all operations",
@@ -96,6 +111,9 @@ def main():
             no_side_effects=args.no_side_effects,
             no_memory_reads=args.no_memory_reads,
             no_memory_writes=args.no_memory_writes,
+            no_HalfFloatWord=args.no_HalfFloatWord,
+            no_FloatWord=args.no_FloatWord,
+            no_RawData=args.no_RawData,
         )
 
     for filename, df_operations in filtered_operations.items():
