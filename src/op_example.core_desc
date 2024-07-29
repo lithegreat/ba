@@ -1,0 +1,33 @@
+// Integer addition. Output 3 is sum of inputs 1 and 2.
+  ADD {
+      operands: {
+          unsigned<5> rd [[reg_type=s32]] [[out]];
+          unsigned<5> rs1 [[reg_type=s32]] [[in]];
+          unsigned<5> rs2 [[reg_type=s32]] [[in]];
+      }
+      encoding: auto;
+      assembly: {"OpenASIP_base.ADD", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+      behavior: {if (rd % RFS != 0) X[rd % RFS] = X[rs1 % RFS] + X[rs2 % RFS]};
+  }
+  // Integer subtraction. Input 1 is minuend,  input 2 is subtrahend and output 3 is difference.
+  SUB {
+      operands: {
+          unsigned<5> rd [[reg_type=s32]] [[out]];
+          unsigned<5> rs1 [[reg_type=s32]] [[in]];
+          unsigned<5> rs2 [[reg_type=s32]] [[in]];
+      }
+      encoding: auto;
+      assembly: {"OpenASIP_base.SUB", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+      behavior: {if ((rd % RFS) != 0) X[rd % RFS] = X[rs1 % RFS] - X[rs2 % RFS]};
+  }
+  // Equality comparison. Output 3 returns '1' if inputs 1 and 2 are equal and otherwise returns '0'.
+  EQ {
+      operands: {
+          unsigned<0> rd [[reg_type=u1]] [[out]];
+          unsigned<5> rs1 [[reg_type=s32]] [[in]];
+          unsigned<5> rs2 [[reg_type=s32]] [[in]];
+      }
+      encoding: auto;
+      assembly: {"OpenASIP_base.EQ", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+      behavior: {if ((rd % RFS) != 0) X[rd % RFS] = (X[rs1 % RFS] == X[rs2 % RFS])};
+  }
