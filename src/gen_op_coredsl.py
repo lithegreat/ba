@@ -4,11 +4,6 @@ import math
 import argparse
 
 
-def log_width(width):
-    # Calculate log base 2 of width
-    return int(math.log2(width))
-
-
 def determine_reg_type(element_type):
     # Determine register type based on element type
     if isinstance(element_type, str):
@@ -51,48 +46,44 @@ def generate_instruction_set(input_filepath, output_directory):
                     f.write(f"        // {line}\n")
 
             # Calculate rd_width, rs1_width, rs2_width, rs3_width and handle NaN values
-            rd_width = -1
-            rs1_width = -1
-            rs2_width = -1
-            rs3_width = -1
+            oo_1_element_width = -1
+            io_1_element_width = -1
+            io_2_element_width = -1
+            io_3_element_width = -1
 
             if pd.notna(row["oo_1_element_width"]):
                 oo_1_element_width = int(row["oo_1_element_width"])
-                rd_width = int(log_width(oo_1_element_width))
 
             if pd.notna(row["io_1_element_width"]):
                 io_1_element_width = int(row["io_1_element_width"])
-                rs1_width = int(log_width(io_1_element_width))
 
             if "io_2_element_width" in row and pd.notna(row["io_2_element_width"]):
                 io_2_element_width = int(row["io_2_element_width"])
-                rs2_width = log_width(io_2_element_width)
 
             if "io_3_element_width" in row and pd.notna(row["io_3_element_width"]):
                 io_3_element_width = int(row["io_3_element_width"])
-                rs3_width = log_width(io_3_element_width)
 
             f.write(f"        {operation_name} " + "{\n")
             f.write("            operands: {\n")
 
-            if rd_width != -1:
+            if oo_1_element_width != -1:
                 f.write(
-                    f"                unsigned<{rd_width}> rd [[reg_type={determine_reg_type(row['oo_1_type'])}{oo_1_element_width}]] [[out]];\n"
+                    f"                unsigned<5> rd [[reg_type={determine_reg_type(row['oo_1_type'])}{oo_1_element_width}]] [[out]];\n"
                 )
 
-            if rs1_width != -1:
+            if io_1_element_width != -1:
                 f.write(
-                    f"                unsigned<{rs1_width}> rs1 [[reg_type={determine_reg_type(row['io_1_type'])}{io_1_element_width}]] [[in]];\n"
+                    f"                unsigned<5> rs1 [[reg_type={determine_reg_type(row['io_1_type'])}{io_1_element_width}]] [[in]];\n"
                 )
 
-            if rs2_width != -1:
+            if io_2_element_width != -1:
                 f.write(
-                    f"                unsigned<{rs2_width}> rs2 [[reg_type={determine_reg_type(row['io_2_type'])}{io_2_element_width}]] [[in]];\n"
+                    f"                unsigned<5> rs2 [[reg_type={determine_reg_type(row['io_2_type'])}{io_2_element_width}]] [[in]];\n"
                 )
 
-            if rs3_width != -1:
+            if io_3_element_width != -1:
                 f.write(
-                    f"                unsigned<{rs3_width}> rs3 [[reg_type={determine_reg_type(row['io_3_type'])}{io_3_element_width}]] [[in]];\n"
+                    f"                unsigned<5> rs3 [[reg_type={determine_reg_type(row['io_3_type'])}{io_3_element_width}]] [[in]];\n"
                 )
 
             f.write("            }\n")
@@ -100,18 +91,18 @@ def generate_instruction_set(input_filepath, output_directory):
 
             # Generate assembly line only if rd, rs1, rs2, or rs3 exist
             operands_list = []
-            if rd_width != -1:
-                operands_list.append("{{name(rd)}}")
-            if rs1_width != -1:
-                operands_list.append("{{name(rs1)}}")
-            if rs2_width != -1:
-                operands_list.append("{{name(rs2)}}")
-            if rs3_width != -1:
-                operands_list.append("{{name(rs3)}}")
+            if oo_1_element_width != -1:
+                operands_list.append("{name(rd)}")
+            if io_1_element_width != -1:
+                operands_list.append("{name(rs1)}")
+            if io_2_element_width != -1:
+                operands_list.append("{name(rs2)}")
+            if io_3_element_width != -1:
+                operands_list.append("{name(rs3)}")
 
             operands_str = ", ".join(operands_list)
             f.write(
-                f'            assembly: {{"OpenASIP_{filename}.{operation_name}", f"{{{operands_str}}}"}};\n'
+                f'            assembly: {{"OpenASIP_{filename}.{operation_name}", "{operands_str}"}};\n'
             )
 
             f.write("            behavior: {};\n")

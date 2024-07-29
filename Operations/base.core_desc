@@ -8,7 +8,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHL1ADD", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.SHL1ADD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Array indexing for 32-bit data types
@@ -19,7 +19,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHL2ADD", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.SHL2ADD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Integer addition. Output 3 is sum of inputs 1 and 2.
@@ -30,7 +30,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.ADD", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.ADD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Integer subtraction. Input 1 is minuend,  input 2 is subtrahend and output 3 is difference.
@@ -41,118 +41,118 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SUB", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.SUB", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Equality comparison. Output 3 returns '1' if inputs 1 and 2 are equal and otherwise returns '0'.
         EQ {
             operands: {
-                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rd [[reg_type=u1]] [[out]];
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.EQ", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.EQ", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Greater-than signed integer comparison. 
         // Output returns '1' if input 1 is greater than input 2 and otherwise returns '0'.
         GT {
             operands: {
-                unsigned<0> rd [[reg_type=s1]] [[out]];
+                unsigned<5> rd [[reg_type=s1]] [[out]];
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.GT", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.GT", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Greater-than unsigned integer comparison. Output returns '1' if input 1 is greater than input 2 and otherwise returns '0'.
         GTU {
             operands: {
-                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rd [[reg_type=u1]] [[out]];
                 unsigned<5> rs1 [[reg_type=u32]] [[in]];
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.GTU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.GTU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Less-than signed integer comparison.
         LT {
             operands: {
-                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rd [[reg_type=u1]] [[out]];
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.LT", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.LT", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Less-than unsigned integer comparison.
         LTU {
             operands: {
-                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rd [[reg_type=u1]] [[out]];
                 unsigned<5> rs1 [[reg_type=u32]] [[in]];
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.LTU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.LTU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Not equal signed integer comparison.
         NE {
             operands: {
-                unsigned<0> rd [[reg_type=s1]] [[out]];
+                unsigned<5> rd [[reg_type=s1]] [[out]];
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.NE", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.NE", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Greater or equal signed integer comparison.
         GE {
             operands: {
-                unsigned<0> rd [[reg_type=s1]] [[out]];
+                unsigned<5> rd [[reg_type=s1]] [[out]];
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.GE", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.GE", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Greater or equal unsigned integer comparison.
         GEU {
             operands: {
-                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rd [[reg_type=u1]] [[out]];
                 unsigned<5> rs1 [[reg_type=u32]] [[in]];
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.GEU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.GEU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Less or equal signed integer comparison.
         LE {
             operands: {
-                unsigned<0> rd [[reg_type=s1]] [[out]];
+                unsigned<5> rd [[reg_type=s1]] [[out]];
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.LE", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.LE", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Less or equal unsigned integer comparison.
         LEU {
             operands: {
-                unsigned<0> rd [[reg_type=u1]] [[out]];
+                unsigned<5> rd [[reg_type=u1]] [[out]];
                 unsigned<5> rs1 [[reg_type=u32]] [[in]];
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.LEU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.LEU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Left logical shift. Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
@@ -160,10 +160,10 @@ InstructionSet OpenASIP_base extends RV32I {
             operands: {
                 unsigned<5> rd [[reg_type=s32]] [[out]];
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
-                unsigned<2> rs2 [[reg_type=u5]] [[in]];
+                unsigned<5> rs2 [[reg_type=u5]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHL", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.SHL", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Left logical shift by 1. Input 1 is value to be shifted and Output 2 is result from operation.
@@ -173,7 +173,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHL1_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHL1_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Left logical shift by 2. Input 1 is value to be shifted and Output 2 is result from operation.
@@ -183,7 +183,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHL2_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHL2_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Left logical shift by 4. Input 1 is value to be shifted and Output 2 is result from operation.
@@ -193,7 +193,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHL4_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHL4_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Left logical shift by 8. Input 1 is value to be shifted and Output 2 is result from operation.
@@ -203,7 +203,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHL8_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHL8_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Left logical shift by 16. Input 1 is value to be shifted and Output 2 is result from operation.
@@ -213,7 +213,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHL16_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHL16_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Arithmetic shift right (sign bit duplicated). Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
@@ -221,10 +221,10 @@ InstructionSet OpenASIP_base extends RV32I {
             operands: {
                 unsigned<5> rd [[reg_type=s32]] [[out]];
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
-                unsigned<2> rs2 [[reg_type=u5]] [[in]];
+                unsigned<5> rs2 [[reg_type=u5]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHR", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.SHR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Arithmetic shift right by one bit.
@@ -234,7 +234,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHR1_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHR1_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Arithmetic shift right by two bits.
@@ -244,7 +244,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHR2_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHR2_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Arithmetic shift right by four bits
@@ -254,7 +254,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHR4_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHR4_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Arithmetic shift right by eight bits.
@@ -264,7 +264,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHR8_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHR8_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Arithmetic shift right by 16 bits.
@@ -274,7 +274,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHR16_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHR16_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Logical shift right (most siginificant bits zeroed). Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
@@ -282,10 +282,10 @@ InstructionSet OpenASIP_base extends RV32I {
             operands: {
                 unsigned<5> rd [[reg_type=u32]] [[out]];
                 unsigned<5> rs1 [[reg_type=u32]] [[in]];
-                unsigned<2> rs2 [[reg_type=u5]] [[in]];
+                unsigned<5> rs2 [[reg_type=u5]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHRU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.SHRU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Logical shift right by one bit.
@@ -295,7 +295,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHRU1_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHRU1_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Logical shift right by two bits
@@ -305,7 +305,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHRU2_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHRU2_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Logical shift right by four bits
@@ -315,7 +315,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHRU4_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHRU4_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Logical shift right by eight bits
@@ -325,7 +325,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHRU8_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHRU8_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Logical shift right by 16 bits
@@ -335,7 +335,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SHRU16_32", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SHRU16_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Bitwise AND. Operands 1 and 2 are inputs and 3 is output result.
@@ -346,7 +346,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.AND", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.AND", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Inclusive OR. Operands 1 and 2 are inputs and 3 is output result.
@@ -357,7 +357,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.IOR", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.IOR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Exclusive OR. Operands 1 and 2 are inputs and 3 is output result.
@@ -368,7 +368,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.XOR", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.XOR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Returns the smaller of the two signed integer values. Operands 1 and 2 are inputs and 3 is output result.
@@ -379,7 +379,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MIN", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MIN", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Returns the larger of the two signed input values. Operands 1 and 2 are inputs and 3 is output result.
@@ -390,7 +390,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MAX", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MAX", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Returns the smaller of the two unsigned input values.
@@ -401,7 +401,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MINU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MINU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Returns the larger of the two unsigned input values.
@@ -412,47 +412,47 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MAXU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MAXU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // sign extend from 1 bit to 32 bits
         SXBW {
             operands: {
                 unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<0> rs1 [[reg_type=s1]] [[in]];
+                unsigned<5> rs1 [[reg_type=s1]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SXBW", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SXBW", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Sign extend from 8 bits of the input 1 to 32 bits into output 2.
         SXQW {
             operands: {
                 unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<3> rs1 [[reg_type=s8]] [[in]];
+                unsigned<5> rs1 [[reg_type=s8]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SXQW", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SXQW", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Sign extend from 16 bits of of the input 1 to 32 bits into output 2.
         SXHW {
             operands: {
                 unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<4> rs1 [[reg_type=s16]] [[in]];
+                unsigned<5> rs1 [[reg_type=s16]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SXHW", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.SXHW", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // truncate 32 bit int to 16 bit int
         TRUNCWH {
             operands: {
-                unsigned<4> rd [[reg_type=s16]] [[out]];
+                unsigned<5> rd [[reg_type=s16]] [[out]];
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.TRUNCWH", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.TRUNCWH", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Arithmetic negation, signed integer.
@@ -462,7 +462,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.NEG", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.NEG", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // 32-bit integer multiplication of the inputs 1 and 2 with lower result bits in the output 3.
@@ -473,7 +473,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MUL", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MUL", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // 32-bit integer multiplication of the signed inputs 1 and 2 with higher result bits in the output 3.
@@ -484,7 +484,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MULHI", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MULHI", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // 32-bit integer multiplication of the unsigned inputs 1 and 2 with higher result bits in the output 3.
@@ -495,7 +495,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MULHIU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MULHIU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // 32-bit integer multiplication of the signed input 1 and unsigned input 2 with higher result bits in the output 3.
@@ -506,7 +506,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MULHISU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MULHISU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Integer division.
@@ -517,7 +517,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.DIV", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.DIV", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Unsigned integer division.
@@ -528,7 +528,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.DIVU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.DIVU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Multiply and accumulate (signed integer).
@@ -540,7 +540,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs3 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MAC", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}, {{name(rs3)}}}"};
+            assembly: {"OpenASIP_base.MAC", "{name(rd)}, {name(rs1)}, {name(rs2)}, {name(rs3)}"};
             behavior: {};
         }
         // Rotate left.
@@ -551,7 +551,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.ROTL", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.ROTL", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Rotate right.
@@ -562,7 +562,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.ROTR", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.ROTR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Absolute value.
@@ -572,7 +572,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.ABS", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.ABS", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Integer modulo.
@@ -583,7 +583,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MOD", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MOD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Integer remainder.
@@ -594,7 +594,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=s32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.REM", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.REM", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Integer modulo (unsigned)
@@ -605,7 +605,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.MODU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.MODU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Integer remainder (unsigned)
@@ -616,7 +616,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.REMU", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.REMU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Bitwise negation.
@@ -626,7 +626,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.NOT", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.NOT", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Does a bitwise negation (NOT) on the 2nd input followed by AND of the 1st input and the negated 2nd output. Special instruction in TI C64X.
@@ -637,7 +637,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.ANDN", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.ANDN", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // Leftmost Bit Detection (from TI C64X). Counts the number of 0's or 1's in the bit representation of operand 1 before the first 1 or 0. 2nd operand is used to tell whether to search for a 0 or 1.
@@ -648,7 +648,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs2 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.LMBD", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}}"};
+            assembly: {"OpenASIP_base.LMBD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
         // The "default streaming" operation for querying input buffer status.
@@ -668,7 +668,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.STREAM_IN_STATUS", f"{{{name(rd)}}, {{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.STREAM_IN_STATUS", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Control leds by writing a bit pattern. Bit 1 switches a led on and 0 switches off.
@@ -677,7 +677,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs1 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.LEDS", f"{{{name(rs1)}}}"};
+            assembly: {"OpenASIP_base.LEDS", "{name(rs1)}"};
             behavior: {};
         }
         // Select one of two values
@@ -689,7 +689,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<5> rs3 [[reg_type=u32]] [[in]];
             }
             encoding: auto;
-            assembly: {"OpenASIP_base.SELECT", f"{{{name(rd)}}, {{name(rs1)}}, {{name(rs2)}}, {{name(rs3)}}}"};
+            assembly: {"OpenASIP_base.SELECT", "{name(rd)}, {name(rs1)}, {name(rs2)}, {name(rs3)}"};
             behavior: {};
         }
     }
