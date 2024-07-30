@@ -3,4 +3,4 @@
 /toolchain/
 /.conda/
 /tce_tutorials/
-*/__pycache__/
+**/__pycache__/
