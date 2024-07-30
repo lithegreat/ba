@@ -4,3 +4,5 @@
 /.conda/
 /tce_tutorials/
 **/__pycache__/
+**/gen_model
+**/gen_output
