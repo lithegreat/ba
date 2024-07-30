@@ -6,7 +6,7 @@ from gen_op_coredsl import generate_instruction_set
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Parse and filter XML operation files. Generate instruction set from Excel file."
+        description="Parse and filter XML operation files."
     )
     parser.add_argument(
         "--directory",
@@ -27,10 +27,11 @@ def main():
         "--max-outputs", type=int, default=1, help="Maximum number of outputs"
     )
     parser.add_argument(
-        "--min-element-width", type=int, default=0, help="Minimum element width"
-    )
-    parser.add_argument(
-        "--max-element-width", type=int, default=32, help="Maximum element width"
+        "--element-widths",
+        type=int,
+        nargs="+",
+        default=[1, 8, 16, 32],
+        help="Allowed element widths",
     )
     parser.add_argument(
         "--no-control-flow",
@@ -89,12 +90,6 @@ def main():
         default="./Operations",
         help="Directory to save filtered results",
     )
-    parser.add_argument(
-        "--filename",
-        type=str,
-        default="base",
-        help="Filename for the instruction set",
-    )
 
     args = parser.parse_args()
 
@@ -109,8 +104,7 @@ def main():
             max_inputs=args.max_inputs,
             min_outputs=args.min_outputs,
             max_outputs=args.max_outputs,
-            min_element_width=args.min_element_width,
-            max_element_width=args.max_element_width,
+            element_widths=args.element_widths,
             no_control_flow=args.no_control_flow,
             no_call=args.no_call,
             no_branch=args.no_branch,
@@ -139,6 +133,7 @@ def main():
     output_directory = "Operations"  # Replace with desired output directory
 
     generate_instruction_set(input_filepath, output_directory)
+
 
 if __name__ == "__main__":
     main()
