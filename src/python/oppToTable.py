@@ -30,6 +30,11 @@ class OperationParser:
                     if operation.find("description") is not None
                     else ""
                 )
+                trigger_semantics = (
+                    operation.find("trigger-semantics").text
+                    if operation.find("trigger-semantics") is not None
+                    else ""
+                )
                 inputs = (
                     operation.find("inputs").text
                     if operation.find("inputs") is not None
@@ -116,6 +121,7 @@ class OperationParser:
                 operation_data = {
                     "name": name,
                     "description": description,
+                    "trigger_semantics": trigger_semantics,
                     "inputs": inputs,
                     "outputs": outputs,
                     "reads_memory": reads_memory,
@@ -154,7 +160,7 @@ class OperationParser:
         max_inputs=3,
         min_outputs=0,
         max_outputs=1,
-        element_widths=[1, 8, 16, 32],
+        element_widths=[1, 5, 8, 16, 32],
         no_control_flow=False,
         no_call=False,
         no_branch=False,
@@ -173,7 +179,7 @@ class OperationParser:
             mask = pd.Series([True] * len(df_operations))
 
             # Filter based on inputs
-            for i in range(1, max(2, max_inputs) + 1):
+            for i in range(1, max_inputs):
                 col_name = f"io_{i}_type"
                 if col_name in df_operations.columns:
                     if no_HalfFloatWord:
@@ -182,11 +188,17 @@ class OperationParser:
                         mask &= df_operations[col_name] != "FloatWord"
                     if no_RawData:
                         mask &= df_operations[col_name] != "RawData"
-            mask &= df_operations["inputs"].fillna(0).astype(int) >= min_inputs
-            mask &= df_operations["inputs"].fillna(0).astype(int) <= max_inputs
+                col_name_width = f"io_{i}_element_width"
+                if col_name_width in df_operations.columns:
+                    df_operations[col_name_width] = df_operations[
+                        col_name_width
+                    ].replace("", "-1")
+                    mask &= df_operations[col_name_width].fillna(0).astype(int).isin(
+                        element_widths
+                    )
 
             # Filter based on outputs
-            for i in range(1, max(2, max_outputs) + 1):
+            for i in range(1, max_outputs):
                 col_name = f"oo_{i}_type"
                 if col_name in df_operations.columns:
                     if no_HalfFloatWord:
@@ -195,23 +207,22 @@ class OperationParser:
                         mask &= df_operations[col_name] != "FloatWord"
                     if no_RawData:
                         mask &= df_operations[col_name] != "RawData"
+
+                col_name_width = f"oo_{i}_element_width"
+                if col_name_width in df_operations.columns:
+                    df_operations[col_name_width] = df_operations[
+                        col_name_width
+                    ].replace("", "-1")
+                    mask &= df_operations[col_name_width].fillna(0).astype(int).isin(
+                        element_widths
+                    )
+
+            # Additional filters
+            mask &= df_operations["inputs"].fillna(0).astype(int) >= min_inputs
+            mask &= df_operations["inputs"].fillna(0).astype(int) <= max_inputs
             mask &= df_operations["outputs"].fillna(0).astype(int) >= min_outputs
             mask &= df_operations["outputs"].fillna(0).astype(int) <= max_outputs
 
-            # Filter based on element widths
-            for width in element_widths:
-                for i in range(1, max(2, max_outputs) + 1):
-                    col_name_width = f"oo_{i}_element_width"
-                    if col_name_width in df_operations.columns:
-                        df_operations[col_name_width] = df_operations[
-                            col_name_width
-                        ].replace("", "-1")
-                        mask &= (
-                            df_operations[col_name_width].fillna(0).astype(int)
-                            == width
-                        )
-
-            # Additional filters
             if no_control_flow:
                 mask &= ~df_operations["control_flow"]
 
@@ -274,7 +285,7 @@ if __name__ == "__main__":
         "--element-widths",
         type=int,
         nargs="+",
-        default=[1, 8, 16, 32],
+        default=[1, 5, 8, 16, 32],
         help="Allowed element widths",
     )
     parser.add_argument(

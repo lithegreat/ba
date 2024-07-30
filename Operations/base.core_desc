@@ -166,56 +166,6 @@ InstructionSet OpenASIP_base extends RV32I {
             assembly: {"OpenASIP_base.SHL", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
-        // Left logical shift by 1. Input 1 is value to be shifted and Output 2 is result from operation.
-        SHL1_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHL1_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Left logical shift by 2. Input 1 is value to be shifted and Output 2 is result from operation.
-        SHL2_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHL2_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Left logical shift by 4. Input 1 is value to be shifted and Output 2 is result from operation.
-        SHL4_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHL4_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Left logical shift by 8. Input 1 is value to be shifted and Output 2 is result from operation.
-        SHL8_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHL8_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Left logical shift by 16. Input 1 is value to be shifted and Output 2 is result from operation.
-        SHL16_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHL16_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
         // Arithmetic shift right (sign bit duplicated). Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
         SHR {
             operands: {
@@ -227,56 +177,6 @@ InstructionSet OpenASIP_base extends RV32I {
             assembly: {"OpenASIP_base.SHR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
-        // Arithmetic shift right by one bit.
-        SHR1_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHR1_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Arithmetic shift right by two bits.
-        SHR2_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHR2_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Arithmetic shift right by four bits
-        SHR4_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHR4_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Arithmetic shift right by eight bits.
-        SHR8_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHR8_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Arithmetic shift right by 16 bits.
-        SHR16_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHR16_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
         // Logical shift right (most siginificant bits zeroed). Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
         SHRU {
             operands: {
@@ -286,56 +186,6 @@ InstructionSet OpenASIP_base extends RV32I {
             }
             encoding: auto;
             assembly: {"OpenASIP_base.SHRU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
-            behavior: {};
-        }
-        // Logical shift right by one bit.
-        SHRU1_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHRU1_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Logical shift right by two bits
-        SHRU2_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHRU2_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Logical shift right by four bits
-        SHRU4_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHRU4_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Logical shift right by eight bits
-        SHRU8_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHRU8_32", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Logical shift right by 16 bits
-        SHRU16_32 {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SHRU16_32", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // Bitwise AND. Operands 1 and 2 are inputs and 3 is output result.
@@ -413,56 +263,6 @@ InstructionSet OpenASIP_base extends RV32I {
             }
             encoding: auto;
             assembly: {"OpenASIP_base.MAXU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
-            behavior: {};
-        }
-        // sign extend from 1 bit to 32 bits
-        SXBW {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s1]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SXBW", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Sign extend from 8 bits of the input 1 to 32 bits into output 2.
-        SXQW {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s8]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SXQW", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Sign extend from 16 bits of of the input 1 to 32 bits into output 2.
-        SXHW {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s16]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.SXHW", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // truncate 32 bit int to 16 bit int
-        TRUNCWH {
-            operands: {
-                unsigned<5> rd [[reg_type=s16]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.TRUNCWH", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Arithmetic negation, signed integer.
-        NEG {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.NEG", "{name(rd)}, {name(rs1)}"};
             behavior: {};
         }
         // 32-bit integer multiplication of the inputs 1 and 2 with lower result bits in the output 3.
@@ -565,16 +365,6 @@ InstructionSet OpenASIP_base extends RV32I {
             assembly: {"OpenASIP_base.ROTR", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
-        // Absolute value.
-        ABS {
-            operands: {
-                unsigned<5> rd [[reg_type=s32]] [[out]];
-                unsigned<5> rs1 [[reg_type=s32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.ABS", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
         // Integer modulo.
         MOD {
             operands: {
@@ -619,16 +409,6 @@ InstructionSet OpenASIP_base extends RV32I {
             assembly: {"OpenASIP_base.REMU", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
             behavior: {};
         }
-        // Bitwise negation.
-        NOT {
-            operands: {
-                unsigned<5> rd [[reg_type=u32]] [[out]];
-                unsigned<5> rs1 [[reg_type=u32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.NOT", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
         // Does a bitwise negation (NOT) on the 2nd input followed by AND of the 1st input and the negated 2nd output. Special instruction in TI C64X.
         ANDN {
             operands: {
@@ -649,35 +429,6 @@ InstructionSet OpenASIP_base extends RV32I {
             }
             encoding: auto;
             assembly: {"OpenASIP_base.LMBD", "{name(rd)}, {name(rs1)}, {name(rs2)}"};
-            behavior: {};
-        }
-        // The "default streaming" operation for querying input buffer status.
-        // 
-        // Trigger with 0.
-        // 
-        // Return an integer with the following meanings:
-        // 
-        // 0 = buffer empty
-        // 1 = not empty nor full (implies a buffer size > 1 sample and that there is at least one sample in the buffer)
-        // 2 = buffer full
-        // 
-        // This operation allows handling stream buffer underflow without a global lock, thus allows doing something useful (run another thread, for example) while the buffer is empty.
-        STREAM_IN_STATUS {
-            operands: {
-                unsigned<5> rd [[reg_type=u32]] [[out]];
-                unsigned<5> rs1 [[reg_type=u32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.STREAM_IN_STATUS", "{name(rd)}, {name(rs1)}"};
-            behavior: {};
-        }
-        // Control leds by writing a bit pattern. Bit 1 switches a led on and 0 switches off.
-        LEDS {
-            operands: {
-                unsigned<5> rs1 [[reg_type=u32]] [[in]];
-            }
-            encoding: auto;
-            assembly: {"OpenASIP_base.LEDS", "{name(rs1)}"};
             behavior: {};
         }
         // Select one of two values
