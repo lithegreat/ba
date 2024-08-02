@@ -57,6 +57,9 @@ def generate_instruction_set(
 
         single_exec_operations = find_single_exec_operations(df)
 
+        # Initialize func7_counter to generate unique func7 values
+        func7_counter = 0
+
         for index, row in df.iterrows():
             operation_name = row["name"]
 
@@ -64,6 +67,8 @@ def generate_instruction_set(
             if generate_single_exec_operations and operation_name not in single_exec_operations:
                 print(f"Skipping operation {operation_name} as it is not in single_exec_operations list")
                 continue
+
+            print(f"Generating code for operation {operation_name}")
 
             description = row["description"]
 
@@ -80,21 +85,20 @@ def generate_instruction_set(
 
             # Write operands section
             f.write(f"        OpenASIP_{filename}_{operation_name} " + "{\n")
-            # f.write("            operands: {\n")
 
-            # for i in range(outputs):
-            #     f.write(
-            #         f"                unsigned<5> rd{i+1} [[reg_type={determine_reg_type(row[f'oo_{i+1}_type'])}{int(row[f'oo_{i+1}_element_width'])}]] [[out]];\n"
-            #     )
+            # Write encoding section
+            f.write("            encoding: ")
 
-            # for i in range(inputs):
-            #     f.write(
-            #         f"                unsigned<5> rs{i+1} [[reg_type={determine_reg_type(row[f'io_{i+1}_type'])}{int(row[f'io_{i+1}_element_width'])}]] [[in]];\n"
-            #     )
+            # Generate func7 for this operation
+            func7 = f"7'b{func7_counter:07b}"
+            func7_counter += 1
 
-            # f.write("            }\n")
-            f.write("            encoding: ;\n")  # Empty encoding
-            f.write("            assembly: \"")  # Assembly format
+            # Example: 7'b0000000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011
+            encoding = f"{func7} :: {{name(rs2)}}[4:0] :: {{name(rs1)}}[4:0] :: 3'b000 :: {{name(rd)}}[4:0] :: 7'b0001011"
+            f.write(f"{encoding};\n")
+
+            # Write assembly section
+            f.write("            assembly: \"")
 
             operands_list = []
             for i in range(outputs):
