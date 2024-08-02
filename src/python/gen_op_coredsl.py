@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import argparse
-
+import re
 
 def determine_reg_type(element_type):
     # Determine register type based on element type
@@ -14,7 +14,6 @@ def determine_reg_type(element_type):
             return "u"  # Default to unsigned if type is not specified
     else:
         return "u"  # Default to unsigned if element_type is not a string or NaN
-
 
 def find_single_exec_operations(df):
     # Find operations with exactly one EXEC_OPERATION in trigger_semantics
@@ -30,11 +29,59 @@ def find_single_exec_operations(df):
             if len(exec_operations) == 1:
                 single_exec_operations.append(row["name"])
 
-    print("Single EXEC_OPERATION operations found:")
-    print(single_exec_operations)  # Print the list of single EXEC_OPERATION operations found
-
     return single_exec_operations
 
+def extract_trigger_code(filepath, operations):
+    operation_codes = {}
+
+    with open(filepath, 'r') as file:
+        content = file.read()
+
+        for operation in operations:
+            pattern = rf"OPERATION\({operation}\)(.*?)END_OPERATION\({operation}\)"
+            match = re.search(pattern, content, re.DOTALL)
+
+            if match:
+                operation_code = match.group(1).strip()
+                operation_codes[operation] = operation_code
+
+    return operation_codes
+
+def transform_trigger_code(trigger_code):
+    transformed_code = ""
+
+    # Replace UINT and ULONG with appropriate formats
+    trigger_code = re.sub(r'UINT\((\d+)\)', r'X[rs\1 % RFS]', trigger_code)
+    trigger_code = re.sub(r'ULONG\((\d+)\)', r'X[\1 % RFS]', trigger_code)
+
+    # Replace SIntWord and UIntWord with signed<XLEN> and unsigned<XLEN> respectively
+    trigger_code = re.sub(r'SIntWord', r'signed<XLEN>', trigger_code)
+    trigger_code = re.sub(r'UIntWord', r'unsigned<XLEN>', trigger_code)
+
+    # Replace MIN and OSAL_WORD_WIDTH with appropriate formats
+    trigger_code = re.sub(r'MIN\(([^)]+)\)', r'min(\1)', trigger_code)
+    trigger_code = re.sub(r'OSAL_WORD_WIDTH', r'32', trigger_code)
+
+    # Replace other specific patterns
+    trigger_code = re.sub(r'\(1\)', r'(rd % RFS)', trigger_code)
+    trigger_code = re.sub(r'\(2\)', r'(X[rs1 % RFS] == X[rs2 % RFS])', trigger_code)
+    trigger_code = re.sub(r'remainder\(([^)]+)\)', r'remainder(\1)', trigger_code)
+    trigger_code = re.sub(r'static_cast<([^>]+)>\(([^)]+)\)', r'\1(\2)', trigger_code)
+    trigger_code = re.sub(r'raise\(([^,]+), ([^)]+)\)', r'raise(\1, \2)', trigger_code)
+
+    # Remove TRIGGER and END_TRIGGER; lines
+    trigger_code = re.sub(r'END_TRIGGER;', r'', trigger_code)
+    trigger_code = re.sub(r'TRIGGER', r'', trigger_code)
+
+    # Replace IO(3) with X[rd % RFS]
+    trigger_code = re.sub(r'IO\(3\)', r'X[rd % RFS]', trigger_code)
+
+    # Add necessary indentation and formatting with 12 spaces
+    lines = trigger_code.strip().splitlines()
+    for line in lines:
+        transformed_code += f"{' ' * 16}{line}\n"
+
+    return transformed_code
 
 def generate_instruction_set(
     input_filepath, output_directory, generate_single_exec_operations=False
@@ -94,7 +141,7 @@ def generate_instruction_set(
             func7_counter += 1
 
             # Example: 7'b0000000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011
-            encoding = f"{func7} :: {{name(rs2)}}[4:0] :: {{name(rs1)}}[4:0] :: 3'b000 :: {{name(rd)}}[4:0] :: 7'b0001011"
+            encoding = f"{func7} :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011"
             f.write(f"{encoding};\n")
 
             # Write assembly section
@@ -109,14 +156,23 @@ def generate_instruction_set(
             operands_str = ", ".join(operands_list)
             f.write(f"{operands_str}\";\n")  # Complete assembly format
 
-            f.write("            behavior: {};\n")  # Empty behavior
+            f.write("            behavior: {\n")  # Empty behavior
+
+            # Extract trigger code for single EXEC_OPERATION operations
+            if args.single_exec_operations:
+                operations = find_single_exec_operations(pd.read_excel(input_filepath))
+                trigger_filepath = f"openasip/openasip/opset/base/{filename}.cc"
+                trigger_code = extract_trigger_code(trigger_filepath, operations)
+                behavior_code = transform_trigger_code(trigger_code.get(operation_name, ''))
+                f.write(f"{behavior_code}")
+
+            f.write("            }\n")
             f.write("        }\n")
 
         f.write("    }\n")
         f.write("}\n")
 
     print(f"Generated instruction set saved to {output_filepath}")
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
