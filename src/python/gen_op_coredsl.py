@@ -16,7 +16,29 @@ def determine_reg_type(element_type):
         return "u"  # Default to unsigned if element_type is not a string or NaN
 
 
-def generate_instruction_set(input_filepath, output_directory):
+def find_single_exec_operations(df):
+    # Find operations with exactly one EXEC_OPERATION in trigger_semantics
+    single_exec_operations = []
+    for index, row in df.iterrows():
+        if pd.notna(row["trigger_semantics"]):
+            trigger_lines = row["trigger_semantics"].strip().splitlines()
+            exec_operations = [
+                line.strip()
+                for line in trigger_lines
+                if line.strip().startswith("EXEC_OPERATION")
+            ]
+            if len(exec_operations) == 1:
+                single_exec_operations.append(row["name"])
+
+    print("Single EXEC_OPERATION operations found:")
+    print(single_exec_operations)  # Print the list of single EXEC_OPERATION operations found
+
+    return single_exec_operations
+
+
+def generate_instruction_set(
+    input_filepath, output_directory, generate_single_exec_operations=False
+):
     # Extract file name without extension
     filename = os.path.splitext(os.path.basename(input_filepath))[0]
 
@@ -33,8 +55,16 @@ def generate_instruction_set(input_filepath, output_directory):
         f.write("InstructionSet OpenASIP_{} extends RV32I {{\n".format(filename))
         f.write("    instructions {\n")
 
+        single_exec_operations = find_single_exec_operations(df)
+
         for index, row in df.iterrows():
             operation_name = row["name"]
+
+            # Check if generate_single_exec_operations is True and operation_name is NOT in single_exec_operations
+            if generate_single_exec_operations and operation_name not in single_exec_operations:
+                print(f"Skipping operation {operation_name} as it is not in single_exec_operations list")
+                continue
+
             description = row["description"]
 
             # Write description as comment at the beginning of each operation
@@ -44,67 +74,38 @@ def generate_instruction_set(input_filepath, output_directory):
                 for line in description_lines:
                     f.write(f"        // {line}\n")
 
-            # Calculate rd_width, rs1_width, rs2_width, rs3_width and handle NaN values
-            oo_1_element_width = -1
-            io_1_element_width = -1
-            io_2_element_width = -1
-            io_3_element_width = -1
+            # Determine number of rd and rs based on inputs and outputs columns
+            inputs = int(row["inputs"]) if pd.notna(row["inputs"]) else 0
+            outputs = int(row["outputs"]) if pd.notna(row["outputs"]) else 0
 
-            if pd.notna(row["oo_1_element_width"]):
-                oo_1_element_width = int(row["oo_1_element_width"])
+            # Write operands section
+            f.write(f"        OpenASIP_{filename}_{operation_name} " + "{\n")
+            # f.write("            operands: {\n")
 
-            if pd.notna(row["io_1_element_width"]):
-                io_1_element_width = int(row["io_1_element_width"])
+            # for i in range(outputs):
+            #     f.write(
+            #         f"                unsigned<5> rd{i+1} [[reg_type={determine_reg_type(row[f'oo_{i+1}_type'])}{int(row[f'oo_{i+1}_element_width'])}]] [[out]];\n"
+            #     )
 
-            if "io_2_element_width" in row and pd.notna(row["io_2_element_width"]):
-                io_2_element_width = int(row["io_2_element_width"])
+            # for i in range(inputs):
+            #     f.write(
+            #         f"                unsigned<5> rs{i+1} [[reg_type={determine_reg_type(row[f'io_{i+1}_type'])}{int(row[f'io_{i+1}_element_width'])}]] [[in]];\n"
+            #     )
 
-            if "io_3_element_width" in row and pd.notna(row["io_3_element_width"]):
-                io_3_element_width = int(row["io_3_element_width"])
+            # f.write("            }\n")
+            f.write("            encoding: ;\n")  # Empty encoding
+            f.write("            assembly: \"")  # Assembly format
 
-            f.write(f"        {operation_name} " + "{\n")
-            f.write("            operands: {\n")
-
-            if oo_1_element_width != -1:
-                f.write(
-                    f"                unsigned<5> rd [[reg_type={determine_reg_type(row['oo_1_type'])}{oo_1_element_width}]] [[out]];\n"
-                )
-
-            if io_1_element_width != -1:
-                f.write(
-                    f"                unsigned<5> rs1 [[reg_type={determine_reg_type(row['io_1_type'])}{io_1_element_width}]] [[in]];\n"
-                )
-
-            if io_2_element_width != -1:
-                f.write(
-                    f"                unsigned<5> rs2 [[reg_type={determine_reg_type(row['io_2_type'])}{io_2_element_width}]] [[in]];\n"
-                )
-
-            if io_3_element_width != -1:
-                f.write(
-                    f"                unsigned<5> rs3 [[reg_type={determine_reg_type(row['io_3_type'])}{io_3_element_width}]] [[in]];\n"
-                )
-
-            f.write("            }\n")
-            f.write("            encoding: auto;\n")
-
-            # Generate assembly line only if rd, rs1, rs2, or rs3 exist
             operands_list = []
-            if oo_1_element_width != -1:
-                operands_list.append("{name(rd)}")
-            if io_1_element_width != -1:
-                operands_list.append("{name(rs1)}")
-            if io_2_element_width != -1:
-                operands_list.append("{name(rs2)}")
-            if io_3_element_width != -1:
-                operands_list.append("{name(rs3)}")
+            for i in range(outputs):
+                operands_list.append(f"{{name(rd{i+1})}}")
+            for i in range(inputs):
+                operands_list.append(f"{{name(rs{i+1})}}")
 
             operands_str = ", ".join(operands_list)
-            f.write(
-                f'            assembly: {{"OpenASIP_{filename}.{operation_name}", "{operands_str}"}};\n'
-            )
+            f.write(f"{operands_str}\";\n")  # Complete assembly format
 
-            f.write("            behavior: {};\n")
+            f.write("            behavior: {};\n")  # Empty behavior
             f.write("        }\n")
 
         f.write("    }\n")
@@ -123,11 +124,16 @@ if __name__ == "__main__":
         default="base",
         help="Filename for the instruction set",
     )
+    parser.add_argument(
+        "--single_exec_operations",
+        action="store_true",
+        help="Generate only operations with single EXEC_OPERATION in trigger_semantics",
+    )
     args = parser.parse_args()
     filename = args.filename
-    input_filepath = (
-        f"Operations/{filename}.xlsx"  # Replace with your input Excel file path
-    )
-    output_directory = "Operations"  # Replace with desired output directory
+    input_filepath = f"Operations/{filename}.xlsx"
+    output_directory = "Operations"
 
-    generate_instruction_set(input_filepath, output_directory)
+    generate_instruction_set(
+        input_filepath, output_directory, args.single_exec_operations
+    )
