@@ -54,9 +54,9 @@ def transform_trigger_code(trigger_code):
     trigger_code = re.sub(r'UINT\((\d+)\)', r'X[rs\1 % RFS]', trigger_code)
     trigger_code = re.sub(r'ULONG\((\d+)\)', r'X[\1 % RFS]', trigger_code)
 
-    # Replace SIntWord and UIntWord with signed<XLEN> and unsigned<XLEN> respectively
-    trigger_code = re.sub(r'SIntWord', r'signed<XLEN>', trigger_code)
-    trigger_code = re.sub(r'UIntWord', r'unsigned<XLEN>', trigger_code)
+    # Replace SIntWord and UIntWord with signed<32> and unsigned<32> respectively
+    trigger_code = re.sub(r'SIntWord', r'signed<32>', trigger_code)
+    trigger_code = re.sub(r'UIntWord', r'unsigned<32>', trigger_code)
 
     # Replace MIN and OSAL_WORD_WIDTH with appropriate formats
     trigger_code = re.sub(r'MIN\(([^)]+)\)', r'min(\1)', trigger_code)
@@ -79,7 +79,7 @@ def transform_trigger_code(trigger_code):
     # Add necessary indentation and formatting with 12 spaces
     lines = trigger_code.strip().splitlines()
     for line in lines:
-        transformed_code += f"{' ' * 16}{line}\n"
+        transformed_code += f"{' ' * 12}{line}\n"
 
     return transformed_code
 
@@ -164,7 +164,7 @@ def generate_instruction_set(
                 trigger_filepath = f"openasip/openasip/opset/base/{filename}.cc"
                 trigger_code = extract_trigger_code(trigger_filepath, operations)
                 behavior_code = transform_trigger_code(trigger_code.get(operation_name, ''))
-                f.write(f"{behavior_code}")
+                f.write(f"    {behavior_code}")
 
             f.write("            }\n")
             f.write("        }\n")
