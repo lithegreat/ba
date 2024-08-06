@@ -1,8 +1,8 @@
+from turtle import up
 import pandas as pd
 import os
 import argparse
 import re
-
 
 def determine_reg_type(element_type):
     # Determine register type based on element type
@@ -15,7 +15,6 @@ def determine_reg_type(element_type):
             return "u"  # Default to unsigned if type is not specified
     else:
         return "u"  # Default to unsigned if element_type is not a string or NaN
-
 
 def find_single_exec_operations(df):
     # Find operations with exactly one EXEC_OPERATION in trigger_semantics
@@ -33,7 +32,6 @@ def find_single_exec_operations(df):
 
     return single_exec_operations
 
-
 def extract_trigger_code(filepath, operations):
     operation_codes = {}
 
@@ -49,7 +47,6 @@ def extract_trigger_code(filepath, operations):
                 operation_codes[operation] = operation_code
 
     return operation_codes
-
 
 def transform_trigger_code(trigger_code):
     transformed_code = ""
@@ -108,6 +105,26 @@ def transform_trigger_code(trigger_code):
 
     return transformed_code
 
+def find_based_operation(row, df):
+    semantics = row["trigger_semantics"]
+    if pd.notna(semantics):
+        match = re.search(r"EXEC_OPERATION\((\w+), (.*?), (.*?), (.*?)\);", semantics)
+        # print(f"Match: {match}")
+        if match:
+            based_operation = match.group(1)
+            print(f"base_operation of {row['name']}: {based_operation.upper()}")
+            return based_operation.upper()
+    #         print(f"base_operation: {base_operation}")
+    #         replacements = match.groups()[1:]
+    #         base_row = df[df["name"] == base_operation.upper()]
+    #         print(f"base_row: {base_row}")
+    #         if not base_row.empty:
+    #             base_trigger_code = base_row.iloc[0]["trigger_semantics"]
+    #             for i, replacement in enumerate(replacements, 1):
+    #                 base_trigger_code = base_trigger_code.replace(f"IO({i})", replacement)
+    #             print(f"trigger_semantics for {row['name']} replaced with {base_trigger_code}")
+    #             return base_trigger_code
+    # return ""
 
 def generate_instruction_set(
     input_filepath, output_directory, generate_single_exec_operations=False
@@ -199,6 +216,17 @@ def generate_instruction_set(
                 behavior_code = transform_trigger_code(
                     trigger_code.get(operation_name, "")
                 )
+                if not behavior_code:
+                    print(f"Trigger code not found for operation {operation_name}")
+                    based_operation = find_based_operation(row, df)
+                    behavior_code = transform_trigger_code(
+                        trigger_code.get(based_operation, "")
+                    )
+                    # swap rs1 and rs2
+                    temp_rs1 = "TEMP_RS1"
+                    behavior_code = behavior_code.replace("rs1", temp_rs1)
+                    behavior_code = behavior_code.replace("rs2", "rs1")
+                    behavior_code = behavior_code.replace(temp_rs1, "rs2")
                 f.write(f"    {behavior_code}")
 
             f.write("            }\n")
@@ -208,7 +236,6 @@ def generate_instruction_set(
         f.write("}\n")
 
     print(f"Generated instruction set saved to {output_filepath}")
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

@@ -52,14 +52,18 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0000101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                }
+                signed<32> in1 = static_cast<signed<32>>(X[rs2 % RFS]);
+                signed<32> in2 = static_cast<signed<32>>(X[rs1 % RFS]);
+                X[rd % RFS] = (in1 > in2) ? 1 : 0;
+            }
         }
         // Less-than unsigned integer comparison.
         OpenASIP_base_LTU {
             encoding: 7'b0000110 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                }
+                X[rd % RFS] = (X[rs2 % RFS] > X[rs1 % RFS]) ? 1 : 0;
+            }
         }
         // Left logical shift. Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
         OpenASIP_base_SHL {
