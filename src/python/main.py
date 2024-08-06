@@ -30,7 +30,7 @@ def main():
         "--element-widths",
         type=int,
         nargs="+",
-        default=[1, 8, 16, 32],
+        default=[1, 5, 8, 16, 32],
         help="Allowed element widths",
     )
     parser.add_argument(
