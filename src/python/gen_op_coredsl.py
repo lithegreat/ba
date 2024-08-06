@@ -121,7 +121,7 @@ def find_based_operation(row, df):
             return based_operation.upper()
 
 
-def generate_behavior_code(operation_name, row, df):
+def generate_behavior_code(operation_name, input_filepath, filename, row, df):
     operations = find_single_exec_operations(pd.read_excel(input_filepath))
     trigger_filepath = f"openasip/openasip/opset/base/{filename}.cc"
     trigger_code = extract_trigger_code(trigger_filepath, operations)
@@ -222,7 +222,9 @@ def generate_instruction_set(
 
             # Extract trigger code for single EXEC_OPERATION operations
             if generate_single_exec_operations:
-                behavior_code = generate_behavior_code(operation_name, row, df)
+                behavior_code = generate_behavior_code(
+                    operation_name, input_filepath, filename, row, df
+                )
                 f.write(f"    {behavior_code}")
 
             f.write("            }\n")
