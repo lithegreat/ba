@@ -6,7 +6,7 @@ import "../../toolchain/etiss_arch_riscv/rv_base/RVF.core_desc"
 import "../../toolchain/etiss_arch_riscv/tum_mod.core_desc"
 import "../../toolchain/etiss_arch_riscv/tum_rva.core_desc"
 import "../../toolchain/etiss_arch_riscv/tum_rvm.core_desc"
-import "op_example.core_desc"
+import "base.core_desc"
 
 
 Core RV32IMACFD provides RV32I, RV32IC, RV32M, RV32F, RV32FC, RV32D, RV32DC, Zifencei, OpenASIP_base, tum_csr, tum_ret, tum_rva, tum_semihosting {

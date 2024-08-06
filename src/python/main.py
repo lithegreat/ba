@@ -139,7 +139,7 @@ def main():
 
     filename = args.filename
     input_filepath = f"Operations/{filename}.xlsx"
-    output_directory = "Operations"
+    output_directory = "src/CoreDSL"
 
     generate_instruction_set(
         input_filepath, output_directory, args.single_exec_operations
