@@ -165,24 +165,6 @@ def generate_instruction_set(
 
     with open(output_filepath, "w") as f:
         f.write("InstructionSet OpenASIP_{} extends RV32I {{\n".format(filename))
-        # Write funtions
-        #     functions{
-        #     // Returns the minimum of two signed integers.
-        #     signed<32> min(signed<32> a, signed<32> b) {
-        #         return (a < b) ? a : b;
-        #     }
-        #     // Returns the remainder of two signed integers.
-        #     signed<32> remainder(signed<32> a, signed<32> b) {
-        #         signed<32> temp = a % b;
-        #         if ((temp < 0 && b > 0) || (temp > 0 && b < 0)) {
-        #             temp += b;
-        #         }
-        #         return temp;
-        #     }
-        #     signed BWIDTH(signed<32> a) {
-        #         return 32;
-        #     }
-        # }
         f.write("    functions{\n")
         f.write("        // Returns the minimum of two signed integers.\n")
         f.write("        signed<32> min(signed<32> a, signed<32> b) {\n")
