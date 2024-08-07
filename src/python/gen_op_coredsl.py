@@ -76,6 +76,7 @@ def transform_trigger_code(trigger_code):
     trigger_code = re.sub(r"static_cast<((?:[^<>]+|<[^<>]*>)+)>\(([^)]+)\)", r"(\1)(\2)", trigger_code)
     trigger_code = re.sub(r"static_cast<((?:[^<>]+|<[^<>]*>)+)>\(([^)]+)\)", r"(\1)(\2)", trigger_code)
     trigger_code = re.sub(r"raise\(([^,]+), ([^)]+)\)", r"raise(\1, \2)", trigger_code)
+    trigger_code = re.sub(r"return true;", r"" , trigger_code)
 
     # Remove TRIGGER and END_TRIGGER; lines
     trigger_code = re.sub(r"END_TRIGGER;", r"", trigger_code)
