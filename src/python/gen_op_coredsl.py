@@ -1,4 +1,5 @@
 from turtle import up
+from numpy import tri
 import pandas as pd
 import os
 import argparse
@@ -57,7 +58,8 @@ def transform_trigger_code(trigger_code):
 
     # Replace UINT and ULONG with appropriate formats
     trigger_code = re.sub(r"UINT\((\d+)\)", r"X[rs\1 % RFS]", trigger_code)
-    trigger_code = re.sub(r"ULONG\((\d+)\)", r"X[\1 % RFS]", trigger_code)
+    trigger_code = re.sub(r"ULONG\((\d+)\)", r"X[rs\1 % RFS]", trigger_code)
+    trigger_code = re.sub(r"INT\((\d+)\)", r"X[rs\1 % RFS]", trigger_code)
 
     # Replace SIntWord and UIntWord with signed<32> and unsigned<32> respectively
     trigger_code = re.sub(r"SIntWord", r"signed<32>", trigger_code)
@@ -71,7 +73,8 @@ def transform_trigger_code(trigger_code):
     trigger_code = re.sub(r"\(1\)", r"(rd % RFS)", trigger_code)
     trigger_code = re.sub(r"\(2\)", r"(X[rs1 % RFS] == X[rs2 % RFS])", trigger_code)
     trigger_code = re.sub(r"remainder\(([^)]+)\)", r"remainder(\1)", trigger_code)
-    trigger_code = re.sub(r"static_cast<([^>]+)>\(([^)]+)\)", r"\1(\2)", trigger_code)
+    trigger_code = re.sub(r"static_cast<((?:[^<>]+|<[^<>]*>)+)>\(([^)]+)\)", r"(\1)(\2)", trigger_code)
+    trigger_code = re.sub(r"static_cast<((?:[^<>]+|<[^<>]*>)+)>\(([^)]+)\)", r"(\1)(\2)", trigger_code)
     trigger_code = re.sub(r"raise\(([^,]+), ([^)]+)\)", r"raise(\1, \2)", trigger_code)
 
     # Remove TRIGGER and END_TRIGGER; lines
@@ -84,7 +87,7 @@ def transform_trigger_code(trigger_code):
     # Change specific condition if (X[rs2 % RFS] == 0) to if (X[rs2 % RFS] != 0) and remove RUNTIME_ERROR
     trigger_code = re.sub(
         r'if\s*\(X\[rs2\s*%\s*RFS\]\s*==\s*0\)\s*RUNTIME_ERROR\("Divide by zero."\)',
-        r"if (X[rs2 % RFS] != 0)",
+        r"if (X[rs2 % RFS] != 0) {",
         trigger_code,
     )
 
@@ -99,6 +102,8 @@ def transform_trigger_code(trigger_code):
         elif inside_if_block and (line.startswith("}") or line.startswith("else")):
             # Closing or else part of if block, reset indentation
             transformed_code += f"{' ' * 12}{line}\n"
+            if line.startswith("else"):
+                transformed_code += f"{' ' * 12}{{\n"  # Add opening brace for else block
             inside_if_block = False
         elif inside_if_block:
             # Inside if block, ensure indentation
@@ -107,7 +112,12 @@ def transform_trigger_code(trigger_code):
             # Standard indentation for other lines
             transformed_code += f"{' ' * 12}{line}\n"
 
+    # Ensure to close the last opened if block with a }
+    if inside_if_block:
+        transformed_code += f"{' ' * 16}}}\n"
+
     return transformed_code
+
 
 
 def find_based_operation(row, df):
@@ -155,6 +165,41 @@ def generate_instruction_set(
 
     with open(output_filepath, "w") as f:
         f.write("InstructionSet OpenASIP_{} extends RV32I {{\n".format(filename))
+        # Write funtions
+        #     functions{
+        #     // Returns the minimum of two signed integers.
+        #     signed<32> min(signed<32> a, signed<32> b) {
+        #         return (a < b) ? a : b;
+        #     }
+        #     // Returns the remainder of two signed integers.
+        #     signed<32> remainder(signed<32> a, signed<32> b) {
+        #         signed<32> temp = a % b;
+        #         if ((temp < 0 && b > 0) || (temp > 0 && b < 0)) {
+        #             temp += b;
+        #         }
+        #         return temp;
+        #     }
+        #     signed BWIDTH(signed<32> a) {
+        #         return 32;
+        #     }
+        # }
+        f.write("    functions{\n")
+        f.write("        // Returns the minimum of two signed integers.\n")
+        f.write("        signed<32> min(signed<32> a, signed<32> b) {\n")
+        f.write("            return (a < b) ? a : b;\n")
+        f.write("        }\n")
+        f.write("        // Returns the remainder of two signed integers.\n")
+        f.write("        signed<32> remainder(signed<32> a, signed<32> b) {\n")
+        f.write("            signed<32> temp = a % b;\n")
+        f.write("            if ((temp < 0 && b > 0) || (temp > 0 && b < 0)) {\n")
+        f.write("                temp += b;\n")
+        f.write("            }\n")
+        f.write("            return temp;\n")
+        f.write("        }\n")
+        f.write("        signed<32> BWIDTH(signed<32> a) {\n")
+        f.write("            return 32;\n")
+        f.write("        }\n")
+        f.write("    }\n")
         f.write("    instructions {\n")
 
         single_exec_operations = find_single_exec_operations(df)

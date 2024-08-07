@@ -1,4 +1,22 @@
 InstructionSet OpenASIP_base extends RV32I {
+    functions{
+        // Returns the minimum of two signed integers.
+        signed<32> min(signed<32> a, signed<32> b) {
+            return (a < b) ? a : b;
+        }
+        // Returns the remainder of two signed integers.
+        signed<32> remainder(signed<32> a, signed<32> b) {
+            signed<32> temp = a % b;
+            if ((temp < 0 && b > 0) || (temp > 0 && b < 0)) {
+                temp += b;
+            }
+            return temp;
+        }
+        signed<32> BWIDTH(signed<32> a) {
+            return 32;
+        }
+    }
+
     instructions {
         // Integer addition. Output 3 is sum of inputs 1 and 2.
         OpenASIP_base_ADD {
@@ -28,14 +46,14 @@ InstructionSet OpenASIP_base extends RV32I {
                 }
             }
         }
-        // Greater-than signed integer comparison. 
+        // Greater-than signed integer comparison.
         // Output returns '1' if input 1 is greater than input 2 and otherwise returns '0'.
         OpenASIP_base_GT {
             encoding: 7'b0000011 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                signed<32> in1 = static_cast<signed<32>>(X[rs1 % RFS]);
-                signed<32> in2 = static_cast<signed<32>>(X[rs2 % RFS]);
+                signed<32> in1 = (signed<32>)(X[rs1 % RFS]);
+                signed<32> in2 = (signed<32>)(X[rs2 % RFS]);
                 X[rd % RFS] = (in1 > in2) ? 1 : 0;
             }
         }
@@ -52,8 +70,8 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0000101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                signed<32> in1 = static_cast<signed<32>>(X[rs2 % RFS]);
-                signed<32> in2 = static_cast<signed<32>>(X[rs1 % RFS]);
+                signed<32> in1 = (signed<32>)(X[rs2 % RFS]);
+                signed<32> in2 = (signed<32>)(X[rs1 % RFS]);
                 X[rd % RFS] = (in1 > in2) ? 1 : 0;
             }
         }
@@ -78,18 +96,18 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0001000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                signed<32> int1 = static_cast<signed<32>>(X[rs1 % RFS]);
-                signed<32> int2 = static_cast<signed<32>>(X[rs2 % RFS]);
-            
+                signed<32> int1 = (signed<32>)(X[rs1 % RFS]);
+                signed<32> int2 = (signed<32>)(X[rs2 % RFS]);
+
                 if (int2 > min(
-                        static_cast<signed<32>>(BWIDTH(rd % RFS)), 
-                        static_cast<signed<32>>(32))) {
+                        (signed<32>)(BWIDTH(rd % RFS)),
+                        (signed<32>)(32))) {
                     X[rd % RFS] = 0;
                     return true;
                 }
-                
+
                 signed<32> int3 = int1 >> int2;
-                X[rd % RFS] = static_cast<signed<32>>(int3);
+                X[rd % RFS] = (signed<32>)(int3);
             }
         }
         // Bitwise AND. Operands 1 and 2 are inputs and 3 is output result.
@@ -121,10 +139,10 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0001100 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                signed<32> in1 = static_cast<signed<32>>(INT(rd % RFS));
-                signed<32> in2 = static_cast<signed<32>>(INT(X[rs1 % RFS] == X[rs2 % RFS]));
+                signed<32> in1 = (signed<32>)(X[rs1 % RFS]);
+                signed<32> in2 = (signed<32>)(X[rs2 % RFS]);
                 signed<32> in3 = (in1 < in2) ? in1 : in2;
-                X[rd % RFS] = static_cast<signed<32>>(in3);
+                X[rd % RFS] = (signed<32>)(in3);
             }
         }
         // Returns the larger of the two signed input values. Operands 1 and 2 are inputs and 3 is output result.
@@ -132,10 +150,10 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0001101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                signed<32> in1 = static_cast<signed<32>>(INT(rd % RFS));
-                signed<32> in2 = static_cast<signed<32>>(INT(X[rs1 % RFS] == X[rs2 % RFS]));
+                signed<32> in1 = (signed<32>)(X[rs1 % RFS]);
+                signed<32> in2 = (signed<32>)(X[rs2 % RFS]);
                 signed<32> in3 = (in1 > in2) ? in1 : in2;
-                X[rd % RFS] = static_cast<signed<32>>(in3);
+                X[rd % RFS] = (signed<32>)(in3);
             }
         }
         // Returns the smaller of the two unsigned input values.
@@ -145,7 +163,7 @@ InstructionSet OpenASIP_base extends RV32I {
             behavior: {
                 unsigned<32> in1 = X[rs1 % RFS];
                 unsigned<32> in2 = X[rs2 % RFS];
-            
+
                 if (in1 < in2) {
                     X[rd % RFS] = in1;
                 } else {
@@ -160,7 +178,7 @@ InstructionSet OpenASIP_base extends RV32I {
             behavior: {
                 unsigned<32> in1 = X[rs1 % RFS];
                 unsigned<32> in2 = X[rs2 % RFS];
-            
+
                 if (in1 > in2) {
                     X[rd % RFS] = in1;
                 } else {
@@ -181,10 +199,11 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0010001 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                if (X[rs2 % RFS] != 0)
-                
-                    X[rd % RFS] = static_cast<signed<32>>(
-                	(static_cast<signed<32>>(X[rs1 % RFS]) / static_cast<signed<32>>(X[rs2 % RFS])));
+                if (X[rs2 % RFS] != 0) {
+
+                    X[rd % RFS] = (signed<32>)(
+                	((signed<32>)(X[rs1 % RFS]) / (signed<32>)(X[rs2 % RFS])));
+                }
             }
         }
         // Unsigned integer division.
@@ -192,9 +211,10 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0010010 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                if (X[rs2 % RFS] != 0)
-                
+                if (X[rs2 % RFS] != 0) {
+
                     X[rd % RFS] = X[rs1 % RFS] / X[rs2 % RFS];
+                }
             }
         }
         // Rotate right.
@@ -202,8 +222,8 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0010011 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                unsigned<32> in1 = X[1 % RFS];
-                unsigned<32> in2 = X[2 % RFS];
+                unsigned<32> in1 = X[rs1 % RFS];
+                unsigned<32> in2 = X[rs2 % RFS];
                 in2 = in2 % 32;
                 X[rd % RFS] = (in1 >> in2) | (in1 << (32 - in2));
             }
@@ -213,12 +233,13 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0010100 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                if (X[rs2 % RFS] != 0)
-                            
-                    signed<32> in1 = static_cast<signed<32>>(X[rs1 % RFS]);
-                    signed<32> in2 = static_cast<signed<32>>(X[rs2 % RFS]);
+                if (X[rs2 % RFS] != 0) {
+
+                    signed<32> in1 = (signed<32>)(X[rs1 % RFS]);
+                    signed<32> in2 = (signed<32>)(X[rs2 % RFS]);
                     signed<32> out1 = in1 % in2;
-                    X[rd % RFS] = static_cast<signed<32>>(out1);
+                    X[rd % RFS] = (signed<32>)(out1);
+                }
             }
         }
         // Integer remainder.
@@ -226,12 +247,13 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0010101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                if (X[rs2 % RFS] != 0)
-                            
-                    signed<32> in1 = static_cast<signed<32>>(X[rs1 % RFS]);
-                    signed<32> in2 = static_cast<signed<32>>(X[rs2 % RFS]);
+                if (X[rs2 % RFS] != 0) {
+
+                    signed<32> in1 = (signed<32>)(X[rs1 % RFS]);
+                    signed<32> in2 = (signed<32>)(X[rs2 % RFS]);
                     signed<32> out1 = remainder(in1,in2);
-                    X[rd % RFS] = static_cast<signed<32>>(out1);
+                    X[rd % RFS] = (signed<32>)(out1);
+                }
             }
         }
         // Integer modulo (unsigned)
@@ -239,16 +261,17 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0010110 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                if (X[rs2 % RFS] != 0)    
-                
+                if (X[rs2 % RFS] != 0) {
+
                     unsigned<32> tempIn1 = X[rs1 % RFS];
                     unsigned<32> tempIn2 = X[rs2 % RFS];
-                    unsigned int in1 = unsigned int(tempIn1);
-                    unsigned int in2 = unsigned int(tempIn2);
-                
+                    unsigned int in1 = (unsigned int)(tempIn1);
+                    unsigned int in2 = (unsigned int)(tempIn2);
+
                     unsigned int out1 = in1 % in2;
-                
-                    X[rd % RFS] = static_cast<unsigned<32>>(out1);
+
+                    X[rd % RFS] = (unsigned<32>)(out1);
+                }
             }
         }
         // Integer remainder (unsigned)
@@ -256,16 +279,17 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0010111 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
-                if (X[rs2 % RFS] != 0)    
-                
+                if (X[rs2 % RFS] != 0) {
+
                     unsigned<32> tempIn1 = X[rs1 % RFS];
                     unsigned<32> tempIn2 = X[rs2 % RFS];
-                    unsigned int in1 = unsigned int(tempIn1);
-                    unsigned int in2 = unsigned int(tempIn2);
-                
+                    unsigned int in1 = (unsigned int)(tempIn1);
+                    unsigned int in2 = (unsigned int)(tempIn2);
+
                     unsigned int out1 = remainder(in1, in2);
-                
-                    X[rd % RFS] = static_cast<unsigned<32>>(out1);
+
+                    X[rd % RFS] = (unsigned<32>)(out1);
+                }
             }
         }
     }
