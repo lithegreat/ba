@@ -193,8 +193,11 @@ class OperationParser:
                     df_operations[col_name_width] = df_operations[
                         col_name_width
                     ].replace("", "-1")
-                    mask &= df_operations[col_name_width].fillna(0).astype(int).isin(
-                        element_widths
+                    mask &= (
+                        df_operations[col_name_width]
+                        .fillna(0)
+                        .astype(int)
+                        .isin(element_widths)
                     )
 
             # Filter based on outputs
@@ -213,8 +216,11 @@ class OperationParser:
                     df_operations[col_name_width] = df_operations[
                         col_name_width
                     ].replace("", "-1")
-                    mask &= df_operations[col_name_width].fillna(0).astype(int).isin(
-                        element_widths
+                    mask &= (
+                        df_operations[col_name_width]
+                        .fillna(0)
+                        .astype(int)
+                        .isin(element_widths)
                     )
 
             # Additional filters

@@ -53,7 +53,7 @@ def extract_trigger_code(filepath, operations):
     return operation_codes
 
 
-def transform_trigger_code(trigger_code):
+def transform_trigger_code(trigger_code, remove_RFS=False):
     transformed_code = ""
 
     # Replace UINT and ULONG with appropriate formats
@@ -73,10 +73,14 @@ def transform_trigger_code(trigger_code):
     trigger_code = re.sub(r"\(1\)", r"(rd % RFS)", trigger_code)
     trigger_code = re.sub(r"\(2\)", r"(X[rs1 % RFS] == X[rs2 % RFS])", trigger_code)
     trigger_code = re.sub(r"remainder\(([^)]+)\)", r"remainder(\1)", trigger_code)
-    trigger_code = re.sub(r"static_cast<((?:[^<>]+|<[^<>]*>)+)>\(([^)]+)\)", r"(\1)(\2)", trigger_code)
-    trigger_code = re.sub(r"static_cast<((?:[^<>]+|<[^<>]*>)+)>\(([^)]+)\)", r"(\1)(\2)", trigger_code)
+    trigger_code = re.sub(
+        r"static_cast<((?:[^<>]+|<[^<>]*>)+)>\(([^)]+)\)", r"(\1)(\2)", trigger_code
+    )
+    trigger_code = re.sub(
+        r"static_cast<((?:[^<>]+|<[^<>]*>)+)>\(([^)]+)\)", r"(\1)(\2)", trigger_code
+    )
     trigger_code = re.sub(r"raise\(([^,]+), ([^)]+)\)", r"raise(\1, \2)", trigger_code)
-    trigger_code = re.sub(r"return true;", r"" , trigger_code)
+    trigger_code = re.sub(r"return true;", r"", trigger_code)
 
     # Remove TRIGGER and END_TRIGGER; lines
     trigger_code = re.sub(r"END_TRIGGER;", r"", trigger_code)
@@ -104,7 +108,9 @@ def transform_trigger_code(trigger_code):
             # Closing or else part of if block, reset indentation
             transformed_code += f"{' ' * 12}{line}\n"
             if line.startswith("else"):
-                transformed_code += f"{' ' * 12}{{\n"  # Add opening brace for else block
+                transformed_code += (
+                    f"{' ' * 12}{{\n"  # Add opening brace for else block
+                )
             inside_if_block = False
         elif inside_if_block:
             # Inside if block, ensure indentation
@@ -117,8 +123,10 @@ def transform_trigger_code(trigger_code):
     if inside_if_block:
         transformed_code += f"{' ' * 16}}}\n"
 
-    return transformed_code
+    if remove_RFS:
+        transformed_code = re.sub(r" % RFS", r"", transformed_code)
 
+    return transformed_code
 
 
 def find_based_operation(row, df):
@@ -132,15 +140,21 @@ def find_based_operation(row, df):
             return based_operation.upper()
 
 
-def generate_behavior_code(operation_name, input_filepath, filename, row, df):
+def generate_behavior_code(
+    operation_name, input_filepath, filename, row, df, remove_RFS
+):
     operations = find_single_exec_operations(pd.read_excel(input_filepath))
     trigger_filepath = f"openasip/openasip/opset/base/{filename}.cc"
     trigger_code = extract_trigger_code(trigger_filepath, operations)
-    behavior_code = transform_trigger_code(trigger_code.get(operation_name, ""))
+    behavior_code = transform_trigger_code(
+        trigger_code.get(operation_name, ""), remove_RFS
+    )
     if not behavior_code:
         print(f"Trigger code not found for operation {operation_name}")
         based_operation = find_based_operation(row, df)
-        behavior_code = transform_trigger_code(trigger_code.get(based_operation, ""))
+        behavior_code = transform_trigger_code(
+            trigger_code.get(based_operation, ""), remove_RFS
+        )
         # swap rs1 and rs2
         temp_rs1 = "TEMP_RS1"
         behavior_code = behavior_code.replace("rs1", temp_rs1)
@@ -150,7 +164,10 @@ def generate_behavior_code(operation_name, input_filepath, filename, row, df):
 
 
 def generate_instruction_set(
-    input_filepath, output_directory, generate_single_exec_operations=False
+    input_filepath,
+    output_directory,
+    generate_single_exec_operations=False,
+    remove_RFS=False,
 ):
     # Extract file name without extension
     filename = os.path.splitext(os.path.basename(input_filepath))[0]
@@ -251,7 +268,7 @@ def generate_instruction_set(
             # Extract trigger code for single EXEC_OPERATION operations
             if generate_single_exec_operations:
                 behavior_code = generate_behavior_code(
-                    operation_name, input_filepath, filename, row, df
+                    operation_name, input_filepath, filename, row, df, remove_RFS
                 )
                 f.write(f"    {behavior_code}")
 
@@ -279,11 +296,16 @@ if __name__ == "__main__":
         action="store_true",
         help="Generate only operations with single EXEC_OPERATION in trigger_semantics",
     )
+    parser.add_argument(
+        "--remove_RFS",
+        action="store_true",
+        help="Remove % RFS from the behavior code",
+    )
     args = parser.parse_args()
     filename = args.filename
     input_filepath = f"Operations/{filename}.xlsx"
     output_directory = "src/CoreDSL"
 
     generate_instruction_set(
-        input_filepath, output_directory, args.single_exec_operations
+        input_filepath, output_directory, args.single_exec_operations, args.remove_RFS
     )

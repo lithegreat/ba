@@ -101,6 +101,11 @@ def main():
         action="store_true",
         help="Generate only operations with single EXEC_OPERATION in trigger_semantics",
     )
+    parser.add_argument(
+        "--remove_RFS",
+        action="store_true",
+        help="Remove % RFS from the behavior code",
+    )
 
     args = parser.parse_args()
 
@@ -142,7 +147,7 @@ def main():
     output_directory = "src/CoreDSL"
 
     generate_instruction_set(
-        input_filepath, output_directory, args.single_exec_operations
+        input_filepath, output_directory, args.single_exec_operations, args.remove_RFS
     )
 
 
