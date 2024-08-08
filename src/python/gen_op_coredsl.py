@@ -1,3 +1,5 @@
+from math import e, sin
+from operator import ge
 from turtle import up
 from numpy import tri
 import pandas as pd
@@ -20,17 +22,20 @@ def determine_reg_type(element_type):
 
 
 def find_single_exec_operations(df):
-    # Find operations with exactly one EXEC_OPERATION in trigger_semantics
+    # Find operations with zero or exactly one EXEC_OPERATION in trigger_semantics
     single_exec_operations = []
     for index, row in df.iterrows():
-        if pd.notna(row["trigger_semantics"]):
-            trigger_lines = row["trigger_semantics"].strip().splitlines()
+        trigger_semantics = row.get("trigger_semantics", pd.NA)  # Use pd.NA as the default for missing values
+        if pd.isna(trigger_semantics):  # Check if trigger_semantics is NaN
+            single_exec_operations.append(row["name"])
+        else:
+            trigger_lines = trigger_semantics.strip().splitlines()
             exec_operations = [
                 line.strip()
                 for line in trigger_lines
                 if line.strip().startswith("EXEC_OPERATION")
             ]
-            if len(exec_operations) == 1:
+            if len(exec_operations) <= 1:  # Include if zero or one EXEC_OPERATION
                 single_exec_operations.append(row["name"])
 
     return single_exec_operations
@@ -86,7 +91,9 @@ def transform_trigger_code(trigger_code, remove_RFS=False):
     trigger_code = re.sub(r"END_TRIGGER;", r"", trigger_code)
     trigger_code = re.sub(r"TRIGGER", r"", trigger_code)
 
-    # Replace IO(3) with X[rd % RFS]
+    # Replace IO
+    trigger_code = re.sub(r"IO\(1\)", r"X[rs1 % RFS]", trigger_code)
+    trigger_code = re.sub(r"IO\(2\)", r"X[rs2 % RFS]", trigger_code)
     trigger_code = re.sub(r"IO\(3\)", r"X[rd % RFS]", trigger_code)
 
     # Change specific condition if (X[rs2 % RFS] == 0) to if (X[rs2 % RFS] != 0) and remove RUNTIME_ERROR
@@ -129,37 +136,180 @@ def transform_trigger_code(trigger_code, remove_RFS=False):
     return transformed_code
 
 
-def find_based_operation(row, df):
+def find_based_operation(row, generate_single_exec_operations=False):
     semantics = row["trigger_semantics"]
+
     if pd.notna(semantics):
-        match = re.search(r"EXEC_OPERATION\((\w+), (.*?), (.*?), (.*?)\);", semantics)
-        # print(f"Match: {match}")
-        if match:
-            based_operation = match.group(1)
+        # Find all EXEC_OPERATION occurrences
+        matches = re.findall(
+            r"EXEC_OPERATION\((\w+), (.*?), (.*?), (.*?)\);", semantics
+        )
+
+        if len(matches) == 1:  # If there is only one EXEC_OPERATION
+            based_operation = matches[0][
+                0
+            ]  # Get the first match's first group (operation name)
             print(f"base_operation of {row['name']}: {based_operation.upper()}")
-            return based_operation.upper()
+            return [based_operation.upper()]
+
+        elif len(matches) == 2:  # If there are exactly two EXEC_OPERATIONs
+            if generate_single_exec_operations:  # If only a single operation is allowed
+                print(
+                    f"Error: Multiple EXEC_OPERATION found but single_exec_operations is set to True for {row['name']}."
+                )
+                return None
+            else:  # If multiple operations are allowed, return both operation names
+                based_operations = [match[0].upper() for match in matches]
+                print(f"base_operations of {row['name']}: {based_operations}")
+                return based_operations
+
+        elif len(matches) > 2:  # If there are more than two EXEC_OPERATIONs
+            print(f"Error: More than two EXEC_OPERATION found for {row['name']}.")
+            return None
+
+    # Return None if no EXEC_OPERATION is found or semantics is NaN
+    return None
 
 
-def generate_behavior_code(
-    operation_name, input_filepath, filename, row, df, remove_RFS
+def transform_no_trigger_op_code(behavior_code, remove_RFS):
+    if remove_RFS:
+        if re.search(r"IO\(4\)", behavior_code):
+            behavior_code = re.sub(r"IO\(4\)", r"X[rd]", behavior_code)
+            behavior_code = re.sub(r"IO\(1\)", r"X[rs1]", behavior_code)
+            behavior_code = re.sub(r"IO\(2\)", r"X[rs2]", behavior_code)
+            behavior_code = re.sub(r"IO\(3\)", r"X[rs3]", behavior_code)
+        else:
+            behavior_code = re.sub(r"IO\(1\)", r"X[rs1]", behavior_code)
+            behavior_code = re.sub(r"IO\(2\)", r"X[rs2]", behavior_code)
+            behavior_code = re.sub(r"IO\(3\)", r"X[rd]", behavior_code)
+    else:
+        if re.search(r"IO\(4\)", behavior_code):
+            behavior_code = re.sub(r"IO\(4\)", r"X[rd % RFS]", behavior_code)
+            behavior_code = re.sub(r"IO\(1\)", r"X[rs1 % RFS]", behavior_code)
+            behavior_code = re.sub(r"IO\(2\)", r"X[rs2 % RFS]", behavior_code)
+            behavior_code = re.sub(r"IO\(3\)", r"X[rs3 % RFS]", behavior_code)
+        else:
+            behavior_code = re.sub(r"IO\(1\)", r"X[rs1 % RFS]", behavior_code)
+            behavior_code = re.sub(r"IO\(2\)", r"X[rs2 % RFS]", behavior_code)
+            behavior_code = re.sub(r"IO\(3\)", r"X[rd % RFS]", behavior_code)
+
+    return behavior_code
+
+
+def transform_behavior_code(based_operation, trigger_code, semantics, remove_RFS=False):
+    match = re.search(
+        rf"EXEC_OPERATION\({based_operation.lower()}, (.*?), (.*?), (.*?)\);",
+        semantics,
+    )
+    if match:
+        # Extract the operands and result
+        operand1, operand2, result = match.groups()
+        if remove_RFS:
+            trigger_code = trigger_code.replace("X[rs1]", operand1)
+            trigger_code = trigger_code.replace("X[rs2]", operand2)
+            trigger_code = trigger_code.replace("X[rd]", result)
+        else:
+            trigger_code = trigger_code.replace("X[rs1 % RFS]", operand1)
+            trigger_code = trigger_code.replace("X[rs2 % RFS]", operand2)
+            trigger_code = trigger_code.replace("X[rd % RFS]", result)
+
+    return trigger_code
+
+
+def generate_single_exec_operation_behavior_code(
+    operation_name,
+    filename,
+    row,
+    remove_RFS,
+    generate_single_exec_operations,
+    single_exec_operations,
 ):
-    operations = find_single_exec_operations(pd.read_excel(input_filepath))
     trigger_filepath = f"openasip/openasip/opset/base/{filename}.cc"
-    trigger_code = extract_trigger_code(trigger_filepath, operations)
+    trigger_code = extract_trigger_code(trigger_filepath, single_exec_operations)
     behavior_code = transform_trigger_code(
         trigger_code.get(operation_name, ""), remove_RFS
     )
     if not behavior_code:
         print(f"Trigger code not found for operation {operation_name}")
-        based_operation = find_based_operation(row, df)
-        behavior_code = transform_trigger_code(
-            trigger_code.get(based_operation, ""), remove_RFS
+        based_operation = find_based_operation(row, generate_single_exec_operations)
+        if based_operation:
+            behavior_code = transform_trigger_code(
+                trigger_code.get(based_operation[0], ""), remove_RFS
+            )
+            semantics = row["trigger_semantics"]
+            behavior_code = transform_behavior_code(
+                based_operation[0], behavior_code, semantics, remove_RFS
+            )
+            behavior_code = transform_no_trigger_op_code(behavior_code, remove_RFS)
+
+    return behavior_code
+
+
+def generate_behavior_code(
+    operation_name,
+    input_filepath,
+    filename,
+    row,
+    df,
+    remove_RFS,
+    generate_single_exec_operations,
+    all_operations,
+):
+    single_exec_operations = find_single_exec_operations(pd.read_excel(input_filepath))
+    if generate_single_exec_operations:
+        behavior_code = generate_single_exec_operation_behavior_code(
+            operation_name,
+            filename,
+            row,
+            remove_RFS,
+            generate_single_exec_operations,
+            single_exec_operations,
         )
-        # swap rs1 and rs2
-        temp_rs1 = "TEMP_RS1"
-        behavior_code = behavior_code.replace("rs1", temp_rs1)
-        behavior_code = behavior_code.replace("rs2", "rs1")
-        behavior_code = behavior_code.replace(temp_rs1, "rs2")
+    else:
+        if operation_name in single_exec_operations:
+            behavior_code = generate_single_exec_operation_behavior_code(
+                operation_name,
+                filename,
+                row,
+                remove_RFS,
+                generate_single_exec_operations,
+                single_exec_operations,
+            )
+        else:
+            trigger_filepath = f"openasip/openasip/opset/base/{filename}.cc"
+            trigger_code_dict = extract_trigger_code(trigger_filepath, all_operations)
+            behavior_code = trigger_code_dict.get(operation_name, "")
+
+            if not behavior_code:
+                print(f"Trigger code not found for operation {operation_name}")
+                based_operations = find_based_operation(
+                    row, generate_single_exec_operations
+                )
+                if based_operations:
+                    behavior_code = ""
+                    semantics = row["trigger_semantics"]
+                    for i in range(len(based_operations)):
+                        print(
+                            f"generating behavior code of {operation_name}: {based_operations[i]}"
+                        )
+                        trigger_code = trigger_code_dict.get(based_operations[i], "")
+                        inter_behavior_code = transform_trigger_code(
+                            trigger_code, remove_RFS
+                        )
+                        inter_behavior_code = transform_behavior_code(
+                            based_operations[i],
+                            inter_behavior_code,
+                            semantics,
+                            remove_RFS,
+                        )
+                        if i == 0:
+                            behavior_code += inter_behavior_code
+                        else:
+                            behavior_code += f"    {inter_behavior_code}"
+                    behavior_code = transform_no_trigger_op_code(
+                        behavior_code, remove_RFS
+                    )
+
     return behavior_code
 
 
@@ -204,6 +354,8 @@ def generate_instruction_set(
 
         single_exec_operations = find_single_exec_operations(df)
 
+        all_operations = df["name"].tolist()
+
         # Initialize func7_counter to generate unique func7 values
         func7_counter = 0
 
@@ -220,7 +372,7 @@ def generate_instruction_set(
                 )
                 continue
 
-            print(f"Generating code for operation {operation_name}")
+            print(f"\nGenerating code for operation {operation_name}")
 
             description = row["description"]
 
@@ -265,12 +417,17 @@ def generate_instruction_set(
 
             f.write("            behavior: {\n")
 
-            # Extract trigger code for single EXEC_OPERATION operations
-            if generate_single_exec_operations:
-                behavior_code = generate_behavior_code(
-                    operation_name, input_filepath, filename, row, df, remove_RFS
-                )
-                f.write(f"    {behavior_code}")
+            behavior_code = generate_behavior_code(
+                operation_name,
+                input_filepath,
+                filename,
+                row,
+                df,
+                remove_RFS,
+                generate_single_exec_operations,
+                all_operations,
+            )
+            f.write(f"    {behavior_code}")
 
             f.write("            }\n")
             f.write("        }\n")
