@@ -71,6 +71,8 @@ def transform_trigger_code(trigger_code, remove_RFS=False):
     )
     trigger_code = re.sub(r"raise\(([^,]+), ([^)]+)\)", r"raise(\1, \2)", trigger_code)
     trigger_code = re.sub(r"return true;", r"", trigger_code)
+    trigger_code = re.sub(r"long long", r"long", trigger_code)
+    trigger_code = re.sub(r"sizeof\(unsigned<32>\)", r"4", trigger_code)
 
     # Remove TRIGGER and END_TRIGGER; lines
     trigger_code = re.sub(r"END_TRIGGER;", r"", trigger_code)
@@ -94,21 +96,30 @@ def transform_trigger_code(trigger_code, remove_RFS=False):
         trigger_code,
     )
 
+    # Change specific condition if (bitToSearch > 1) RUNTIME_ERROR("LMDB's 2nd operand must be 0 or 1!");
+    trigger_code = re.sub(
+        r'if\s*\(bitToSearch\s*>\s*1\)\s*RUNTIME_ERROR\("LMDB\'s 2nd operand must be 0 or 1!"\);',
+        r"if (bitToSearch <= 1) {",
+        trigger_code,
+    )
+
     # Add necessary indentation and formatting with 12 spaces
     lines = trigger_code.strip().splitlines()
+    transformed_code = ""
     inside_if_block = False
     for line in lines:
         # Check for if statement and ensure it has correct indentation
-        if line.startswith("if (X[rs2 % RFS] != 0)"):
+        if line.startswith("if (X[rs2 % RFS] != 0) {"):
+            transformed_code += f"{' ' * 12}{line}\n"
+            inside_if_block = True
+        elif line.startswith("if (bitToSearch <= 1) {"):
             transformed_code += f"{' ' * 12}{line}\n"
             inside_if_block = True
         elif inside_if_block and (line.startswith("}") or line.startswith("else")):
             # Closing or else part of if block, reset indentation
             transformed_code += f"{' ' * 12}{line}\n"
             if line.startswith("else"):
-                transformed_code += (
-                    f"{' ' * 12}{{\n"  # Add opening brace for else block
-                )
+                transformed_code += f"{' ' * 12}{{\n"  # Add opening brace for else block
             inside_if_block = False
         elif inside_if_block:
             # Inside if block, ensure indentation
@@ -133,7 +144,8 @@ def find_based_operation(row, generate_single_exec_operations=False):
     if pd.notna(semantics):
         # Find all EXEC_OPERATION occurrences
         matches = re.findall(
-            r"EXEC_OPERATION\((\w+), (.*?), (.*?), (.*?)\);", semantics
+            r"EXEC_OPERATION\(\s*(\w+)\s*(?:,\s*(.*?)\s*)?(?:,\s*(.*?)\s*)?(?:,\s*(.*?)\s*)?\);",
+            semantics
         )
 
         if len(matches) == 1:  # If there is only one EXEC_OPERATION
@@ -189,8 +201,8 @@ def transform_no_trigger_op_code(behavior_code, remove_RFS):
 
 def transform_behavior_code(based_operation, trigger_code, semantics, remove_RFS=False):
     match = re.search(
-        rf"EXEC_OPERATION\({based_operation.lower()}, (.*?), (.*?), (.*?)\);",
-        semantics,
+        rf"EXEC_OPERATION\({based_operation.lower()},\s*(.*?),\s*(.*?),\s*(.*?)\);",
+        semantics
     )
     if match:
         # Extract the operands and result
@@ -203,6 +215,9 @@ def transform_behavior_code(based_operation, trigger_code, semantics, remove_RFS
             trigger_code = trigger_code.replace("X[rs1 % RFS]", operand1)
             trigger_code = trigger_code.replace("X[rs2 % RFS]", operand2)
             trigger_code = trigger_code.replace("X[rd % RFS]", result)
+
+    trigger_code = re.sub(r'\bshifted\s*=', 'signed<32> shifted =', trigger_code)
+    trigger_code = re.sub(r'\bt1\s*=', 'signed<32> t1 =', trigger_code)
 
     return trigger_code
 
@@ -276,6 +291,10 @@ def generate_behavior_code(
                 based_operations = find_based_operation(
                     row, generate_single_exec_operations
                 )
+                for based_operation in based_operations:
+                    if based_operation not in all_operations:
+                        print(f"Error: Based operation {based_operations} not found.")
+                        return -1
                 if based_operations:
                     behavior_code = ""
                     semantics = row["trigger_semantics"]
@@ -391,44 +410,6 @@ def generate_instruction_set(
 
             print(f"\nGenerating code for operation {operation_name}")
 
-            description = row["description"]
-
-            # Write description as comment at the beginning of each operation
-            if pd.notna(description):
-                # Split description into lines and write each line as a comment
-                description_lines = description.splitlines()
-                for line in description_lines:
-                    f.write(f"        // {line}\n")
-
-            # Determine number of rd and rs based on inputs and outputs columns
-            inputs = int(row["inputs"]) if pd.notna(row["inputs"]) else 0
-            outputs = int(row["outputs"]) if pd.notna(row["outputs"]) else 0
-
-            # Write operands section
-            f.write(f"        OpenASIP_{filename}_{operation_name} " + "{\n")
-
-            # Write encoding section
-            f.write("            encoding: ")
-
-            encoding = generate_encoding(
-                operation_name, inputs, outputs, counters
-            )
-            f.write(f"{encoding};\n")
-
-            # Write assembly section
-            f.write('            assembly: "')
-
-            operands_list = []
-            for i in range(outputs):
-                operands_list.append(f"{{name(rd{i+1})}}")
-            for i in range(inputs):
-                operands_list.append(f"{{name(rs{i+1})}}")
-
-            operands_str = ", ".join(operands_list)
-            f.write(f'{operands_str}";\n')  # Complete assembly format
-
-            f.write("            behavior: {\n")
-
             behavior_code = generate_behavior_code(
                 operation_name,
                 input_filepath,
@@ -439,6 +420,44 @@ def generate_instruction_set(
                 generate_single_exec_operations,
                 all_operations,
             )
+            if behavior_code == -1:
+                continue
+            description = row["description"]
+            # Determine number of rd and rs based on inputs and outputs columns
+            inputs = int(row["inputs"]) if pd.notna(row["inputs"]) else 0
+            outputs = int(row["outputs"]) if pd.notna(row["outputs"]) else 0
+            encoding = generate_encoding(
+                operation_name, inputs, outputs, counters
+            )
+            operands_list = []
+            for i in range(outputs):
+                operands_list.append(f"{{name(rd{i+1})}}")
+            for i in range(inputs):
+                operands_list.append(f"{{name(rs{i+1})}}")
+
+            operands_str = ", ".join(operands_list)
+
+            # Write description as comment at the beginning of each operation
+            if pd.notna(description):
+                # Split description into lines and write each line as a comment
+                description_lines = description.splitlines()
+                for line in description_lines:
+                    f.write(f"        // {line}\n")
+
+            # Write operands section
+            f.write(f"        OpenASIP_{filename}_{operation_name} " + "{\n")
+
+            # Write encoding section
+            f.write("            encoding: ")
+
+            f.write(f"{encoding};\n")
+
+            # Write assembly section
+            f.write('            assembly: "')
+
+            f.write(f'{operands_str}";\n')  # Complete assembly format
+
+            f.write("            behavior: {\n")
             f.write(f"    {behavior_code}")
 
             f.write("            }\n")
