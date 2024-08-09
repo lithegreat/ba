@@ -165,7 +165,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 signed<32> int2 = (signed<32>)(X[rs2]);
             
                 if (int2 > min(
-                        (signed<32>)(BWIDTH(rd)), 
+                        (signed<32>)(BWIDTH(X[rs1])), 
                         (signed<32>)(32))) {
                     X[rd] = 0;
                     
@@ -184,7 +184,7 @@ InstructionSet OpenASIP_base extends RV32I {
                 unsigned<32> in2 = X[rs2];
                 
                 if (in2 > min(
-                        (unsigned<32>)(BWIDTH(rd)), 
+                        (unsigned<32>)(BWIDTH(X[rs1])), 
                         (unsigned<32>)(32))) {
                     X[rd] = 0;
                     
@@ -477,11 +477,11 @@ InstructionSet OpenASIP_base extends RV32I {
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}, {name(rs3)}";
             behavior: {
                 if (X[rs3] & 1) {
-                IO(4) = IO(rd);
+                X[rd] = X[rs1];
             } else {
-                IO(4) = IO(X[rs1] == X[rs2]);
+                X[rd] = X[rs2];
             }
-            //IO(4) = ((X[rd]) & 1) ? IO(rd) : IO(X[rs1] == X[rs2]);
+            //X[rd] = ((X[rs3]) & 1) ? X[rs1] : X[rs2];
             }
         }
     }

@@ -75,8 +75,7 @@ def transform_trigger_code(trigger_code, remove_RFS=False):
     trigger_code = re.sub(r"OSAL_WORD_WIDTH", r"32", trigger_code)
 
     # Replace other specific patterns
-    trigger_code = re.sub(r"\(1\)", r"(rd % RFS)", trigger_code)
-    trigger_code = re.sub(r"\(2\)", r"(X[rs1 % RFS] == X[rs2 % RFS])", trigger_code)
+    trigger_code = re.sub(r"BWIDTH\(([^)]+)\)", r"BWIDTH(X[rs\1 % RFS])", trigger_code)
     trigger_code = re.sub(r"remainder\(([^)]+)\)", r"remainder(\1)", trigger_code)
     trigger_code = re.sub(
         r"static_cast<((?:[^<>]+|<[^<>]*>)+)>\(([^)]+)\)", r"(\1)(\2)", trigger_code
@@ -92,9 +91,15 @@ def transform_trigger_code(trigger_code, remove_RFS=False):
     trigger_code = re.sub(r"TRIGGER", r"", trigger_code)
 
     # Replace IO
-    trigger_code = re.sub(r"IO\(1\)", r"X[rs1 % RFS]", trigger_code)
-    trigger_code = re.sub(r"IO\(2\)", r"X[rs2 % RFS]", trigger_code)
-    trigger_code = re.sub(r"IO\(3\)", r"X[rd % RFS]", trigger_code)
+    if re.search(r"IO\(4\)", trigger_code):
+        trigger_code = re.sub(r"IO\(4\)", r"X[rd % RFS]", trigger_code)
+        trigger_code = re.sub(r"IO\(1\)", r"X[rs1 % RFS]", trigger_code)
+        trigger_code = re.sub(r"IO\(2\)", r"X[rs2 % RFS]", trigger_code)
+        trigger_code = re.sub(r"IO\(3\)", r"X[rs3 % RFS]", trigger_code)
+    else:
+        trigger_code = re.sub(r"IO\(1\)", r"X[rs1 % RFS]", trigger_code)
+        trigger_code = re.sub(r"IO\(2\)", r"X[rs2 % RFS]", trigger_code)
+        trigger_code = re.sub(r"IO\(3\)", r"X[rd % RFS]", trigger_code)
 
     # Change specific condition if (X[rs2 % RFS] == 0) to if (X[rs2 % RFS] != 0) and remove RUNTIME_ERROR
     trigger_code = re.sub(
