@@ -1,31 +1,17 @@
-from math import e, sin
 from operator import ge
-from turtle import up
-from numpy import tri
 import pandas as pd
 import os
 import argparse
 import re
 
 
-def determine_reg_type(element_type):
-    # Determine register type based on element type
-    if isinstance(element_type, str):
-        if "SIntWord" in element_type:
-            return "s"
-        elif "UIntWord" in element_type:
-            return "u"
-        else:
-            return "u"  # Default to unsigned if type is not specified
-    else:
-        return "u"  # Default to unsigned if element_type is not a string or NaN
-
-
 def find_single_exec_operations(df):
     # Find operations with zero or exactly one EXEC_OPERATION in trigger_semantics
     single_exec_operations = []
     for index, row in df.iterrows():
-        trigger_semantics = row.get("trigger_semantics", pd.NA)  # Use pd.NA as the default for missing values
+        trigger_semantics = row.get(
+            "trigger_semantics", pd.NA
+        )  # Use pd.NA as the default for missing values
         if pd.isna(trigger_semantics):  # Check if trigger_semantics is NaN
             single_exec_operations.append(row["name"])
         else:
@@ -317,6 +303,32 @@ def generate_behavior_code(
 
     return behavior_code
 
+def generate_encoding(operation_name, inputs, outputs, counters):
+    func7_counter, func3_counter = counters
+
+    if inputs == 2 and outputs == 1:
+        func7 = f"7'b{func7_counter:07b}"
+        func7_counter += 1
+        encoding = (
+            f"{func7} :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011"
+        )
+    elif inputs == 3 and outputs == 1:
+        func3 = f"3'b{func3_counter:03b}"
+        func3_counter += 1
+        encoding = (
+            f"rs3[4:0] :: rs2[4:0] :: rs1[4:0] :: {func3} :: rd[4:0] :: 7'b0110011"
+        )
+    else:
+        print(f"Error: Unsupported number of inputs and outputs for {operation_name}")
+        encoding = ""
+
+    # Update counters in-place
+    counters[0] = func7_counter
+    counters[1] = func3_counter
+
+    return encoding
+
+
 
 def generate_instruction_set(
     input_filepath,
@@ -361,8 +373,8 @@ def generate_instruction_set(
 
         all_operations = df["name"].tolist()
 
-        # Initialize func7_counter to generate unique func7 values
-        func7_counter = 0
+        # Initialize counters as a list
+        counters = [0, 0]
 
         for index, row in df.iterrows():
             operation_name = row["name"]
@@ -398,13 +410,8 @@ def generate_instruction_set(
             # Write encoding section
             f.write("            encoding: ")
 
-            # Generate func7 for this operation
-            func7 = f"7'b{func7_counter:07b}"
-            func7_counter += 1
-
-            # Example: 7'b0000000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011
-            encoding = (
-                f"{func7} :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011"
+            encoding = generate_encoding(
+                operation_name, inputs, outputs, counters
             )
             f.write(f"{encoding};\n")
 
@@ -441,6 +448,7 @@ def generate_instruction_set(
         f.write("}\n")
 
     print(f"Generated instruction set saved to {output_filepath}")
+
 
 
 if __name__ == "__main__":

@@ -350,7 +350,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Multiply and accumulate (signed integer).
         OpenASIP_base_MAC {
-            encoding: 7'b0011110 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: rs3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0110011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}, {name(rs3)}";
             behavior: {
                 t1 = X[rs2]*X[rs3];
@@ -359,7 +359,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Rotate left.
         OpenASIP_base_ROTL {
-            encoding: 7'b0011111 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: 7'b0011110 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
                 unsigned<32> in1 = X[rs1];
@@ -370,7 +370,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Rotate right.
         OpenASIP_base_ROTR {
-            encoding: 7'b0100000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: 7'b0011111 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
                 unsigned<32> in1 = X[rs1];
@@ -381,7 +381,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Integer modulo.
         OpenASIP_base_MOD {
-            encoding: 7'b0100001 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: 7'b0100000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
                 if (X[rs2] != 0) {
@@ -395,7 +395,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Integer remainder.
         OpenASIP_base_REM {
-            encoding: 7'b0100010 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: 7'b0100001 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
                 if (X[rs2] != 0) {
@@ -409,7 +409,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Integer modulo (unsigned)
         OpenASIP_base_MODU {
-            encoding: 7'b0100011 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: 7'b0100010 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
                 if (X[rs2] != 0) {    
@@ -427,7 +427,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Integer remainder (unsigned)
         OpenASIP_base_REMU {
-            encoding: 7'b0100100 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: 7'b0100011 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
                 if (X[rs2] != 0) {    
@@ -445,7 +445,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Does a bitwise negation (NOT) on the 2nd input followed by AND of the 1st input and the negated 2nd output. Special instruction in TI C64X.
         OpenASIP_base_ANDN {
-            encoding: 7'b0100101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: 7'b0100100 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
                 X[rd] = negResult & X[rs1];
@@ -453,7 +453,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Leftmost Bit Detection (from TI C64X). Counts the number of 0's or 1's in the bit representation of operand 1 before the first 1 or 0. 2nd operand is used to tell whether to search for a 0 or 1.
         OpenASIP_base_LMBD {
-            encoding: 7'b0100110 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: 7'b0100101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
             behavior: {
                 int foundBits = 0;
@@ -473,7 +473,7 @@ InstructionSet OpenASIP_base extends RV32I {
         }
         // Select one of two values
         OpenASIP_base_SELECT {
-            encoding: 7'b0100111 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            encoding: rs3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b0110011;
             assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}, {name(rs3)}";
             behavior: {
                 if (X[rs3] & 1) {
