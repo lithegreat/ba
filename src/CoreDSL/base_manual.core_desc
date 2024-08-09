@@ -1,0 +1,485 @@
+InstructionSet OpenASIP_base extends RV32I {
+    functions{
+        // Returns the minimum of two signed integers.
+        signed<32> min(signed<32> a, signed<32> b) {
+            return (a < b) ? a : b;
+        }
+        // Returns the remainder of two signed integers.
+        signed<32> remainder(signed<32> a, signed<32> b) {
+            signed<32> temp = a % b;
+            if ((temp < 0 && b > 0) || (temp > 0 && b < 0)) {
+                temp += b;
+            }
+            return temp;
+        }
+        signed<32> BWIDTH(signed<32> a) {
+            return 32;
+        }
+    }
+    instructions {
+        // Array indexing for 16-bit data types
+        OpenASIP_base_SHL1ADD {
+            encoding: 7'b0000000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> shifted = X[rs1] << 1;
+                X[rd] = shifted + X[rs2];
+            }
+        }
+        // Array indexing for 32-bit data types
+        OpenASIP_base_SHL2ADD {
+            encoding: 7'b0000001 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> shifted = X[rs1] << 2;
+                X[rd] = shifted + X[rs2];
+            }
+        }
+        // Integer addition. Output 3 is sum of inputs 1 and 2.
+        OpenASIP_base_ADD {
+            encoding: 7'b0000010 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                X[rd] = X[rs1] + X[rs2];
+            }
+        }
+        // Integer subtraction. Input 1 is minuend,  input 2 is subtrahend and output 3 is difference.
+        OpenASIP_base_SUB {
+            encoding: 7'b0000011 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                X[rd] = X[rs1] - X[rs2];
+            }
+        }
+        // Equality comparison. Output 3 returns '1' if inputs 1 and 2 are equal and otherwise returns '0'.
+        OpenASIP_base_EQ {
+            encoding: 7'b0000100 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                if (X[rs1] == X[rs2]) {
+                    X[rd] = 1;
+                } else {
+                    X[rd] = 0;
+                }
+            }
+        }
+        // Greater-than signed integer comparison.
+        // Output returns '1' if input 1 is greater than input 2 and otherwise returns '0'.
+        OpenASIP_base_GT {
+            encoding: 7'b0000101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> in1 = (signed<32>)(X[rs1]);
+                signed<32> in2 = (signed<32>)(X[rs2]);
+                X[rd] = (in1 > in2) ? 1 : 0;
+            }
+        }
+        // Greater-than unsigned integer comparison. Output returns '1' if input 1 is greater than input 2 and otherwise returns '0'.
+        OpenASIP_base_GTU {
+            encoding: 7'b0000110 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                X[rd] = (X[rs1] > X[rs2]) ? 1 : 0;
+            }
+        }
+        // Less-than signed integer comparison.
+        OpenASIP_base_LT {
+            encoding: 7'b0000111 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> in1 = (signed<32>)(X[rs2]);
+                signed<32> in2 = (signed<32>)(X[rs1]);
+                X[rd] = (in1 > in2) ? 1 : 0;
+            }
+        }
+        // Less-than unsigned integer comparison.
+        OpenASIP_base_LTU {
+            encoding: 7'b0001000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                X[rd] = (X[rs2] > X[rs1]) ? 1 : 0;
+            }
+        }
+        // Not equal signed integer comparison.
+        OpenASIP_base_NE {
+            encoding: 7'b0001001 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                if (X[rs1] == X[rs2]) {
+                    signed<32> t1 = 1;
+                } else {
+                    signed<32> t1 = 0;
+                }
+                X[rd] = t1 ^ 1;
+            }
+        }
+        // Greater or equal signed integer comparison.
+        OpenASIP_base_GE {
+            encoding: 7'b0001010 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> in1 = (signed<32>)(X[rs2]);
+                signed<32> in2 = (signed<32>)(X[rs1]);
+                signed<32> t1 = (in1 > in2) ? 1 : 0;
+                X[rd] = t1 ^ 1;
+            }
+        }
+        // Greater or equal unsigned integer comparison.
+        OpenASIP_base_GEU {
+            encoding: 7'b0001011 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> t1 = (X[rs2] > X[rs1]) ? 1 : 0;
+                X[rd] = t1 ^ 1;
+            }
+        }
+        // Less or equal signed integer comparison.
+        OpenASIP_base_LE {
+            encoding: 7'b0001100 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> in1 = (signed<32>)(X[rs1]);
+                signed<32> in2 = (signed<32>)(X[rs2]);
+                signed<32> t1 = (in1 > in2) ? 1 : 0;
+                X[rd] = t1 ^ 1;
+            }
+        }
+        // Less or equal unsigned integer comparison.
+        OpenASIP_base_LEU {
+            encoding: 7'b0001101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> t1 = (X[rs1] > X[rs2]) ? 1 : 0;
+                X[rd] = t1 ^ 1;
+            }
+        }
+        // Left logical shift. Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
+        OpenASIP_base_SHL {
+            encoding: 7'b0001110 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                X[rd] = X[rs1] << X[rs2];
+            }
+        }
+        // Arithmetic shift right (sign bit duplicated). Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
+        OpenASIP_base_SHR {
+            encoding: 7'b0001111 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> int1 = (signed<32>)(X[rs1]);
+                signed<32> int2 = (signed<32>)(X[rs2]);
+
+                if (int2 > min(
+                        (signed<32>)(BWIDTH(X[rs1])),
+                        (signed<32>)(32))) {
+                    X[rd] = 0;
+
+                }
+
+                signed<32> int3 = int1 >> int2;
+                X[rd] = (signed<32>)(int3);
+            }
+        }
+        // Logical shift right (most siginificant bits zeroed). Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
+        OpenASIP_base_SHRU {
+            encoding: 7'b0010000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                unsigned<32> in1 = X[rs1];
+                unsigned<32> in2 = X[rs2];
+
+                if (in2 > min(
+                        (unsigned<32>)(BWIDTH(X[rs1])),
+                        (unsigned<32>)(32))) {
+                    X[rd] = 0;
+
+                }
+
+                X[rd] = in1 >> in2;
+            }
+        }
+        // Bitwise AND. Operands 1 and 2 are inputs and 3 is output result.
+        OpenASIP_base_AND {
+            encoding: 7'b0010001 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                X[rd] = X[rs1] & X[rs2];
+            }
+        }
+        // Inclusive OR. Operands 1 and 2 are inputs and 3 is output result.
+        OpenASIP_base_IOR {
+            encoding: 7'b0010010 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                X[rd] = X[rs1] | X[rs2];
+            }
+        }
+        // Exclusive OR. Operands 1 and 2 are inputs and 3 is output result.
+        OpenASIP_base_XOR {
+            encoding: 7'b0010011 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                X[rd] = X[rs1] ^ X[rs2];
+            }
+        }
+        // Returns the smaller of the two signed integer values. Operands 1 and 2 are inputs and 3 is output result.
+        OpenASIP_base_MIN {
+            encoding: 7'b0010100 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> in1 = (signed<32>)(X[rs1]);
+                signed<32> in2 = (signed<32>)(X[rs2]);
+                signed<32> in3 = (in1 < in2) ? in1 : in2;
+                X[rd] = (signed<32>)(in3);
+            }
+        }
+        // Returns the larger of the two signed input values. Operands 1 and 2 are inputs and 3 is output result.
+        OpenASIP_base_MAX {
+            encoding: 7'b0010101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                signed<32> in1 = (signed<32>)(X[rs1]);
+                signed<32> in2 = (signed<32>)(X[rs2]);
+                signed<32> in3 = (in1 > in2) ? in1 : in2;
+                X[rd] = (signed<32>)(in3);
+            }
+        }
+        // Returns the smaller of the two unsigned input values.
+        OpenASIP_base_MINU {
+            encoding: 7'b0010110 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                unsigned<32> in1 = X[rs1];
+                unsigned<32> in2 = X[rs2];
+
+                if (in1 < in2) {
+                    X[rd] = in1;
+                } else {
+                    X[rd] = in2;
+                }
+            }
+        }
+        // Returns the larger of the two unsigned input values.
+        OpenASIP_base_MAXU {
+            encoding: 7'b0010111 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                unsigned<32> in1 = X[rs1];
+                unsigned<32> in2 = X[rs2];
+
+                if (in1 > in2) {
+                    X[rd] = in1;
+                } else {
+                    X[rd] = in2;
+                }
+            }
+        }
+        // 32-bit integer multiplication of the inputs 1 and 2 with lower result bits in the output 3.
+        OpenASIP_base_MUL {
+            encoding: 7'b0011000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                X[rd] = X[rs1]*X[rs2];
+            }
+        }
+        // 32-bit integer multiplication of the signed inputs 1 and 2 with higher result bits in the output 3.
+        OpenASIP_base_MULHI {
+            encoding: 7'b0011001 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                long tmp;
+
+            long in1, in2;
+
+            in1 = (long)(X[rs1]);
+            in2 = (long)(X[rs2]);
+            tmp = in1*in2;
+            tmp = (tmp >> 32);
+            X[rd] = (int)(tmp);
+            }
+        }
+        // 32-bit integer multiplication of the unsigned inputs 1 and 2 with higher result bits in the output 3.
+        OpenASIP_base_MULHIU {
+            encoding: 7'b0011010 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                long tmp;
+
+            long in1, in2;
+
+            in1 = (unsigned long)(X[rs1]);
+            in2 = (unsigned long)(X[rs2]);
+            tmp = in1*in2;
+            tmp = (tmp >> 32);
+            X[rd] = (unsigned int)(tmp);
+            }
+        }
+        // 32-bit integer multiplication of the signed input 1 and unsigned input 2 with higher result bits in the output 3.
+        OpenASIP_base_MULHISU {
+            encoding: 7'b0011011 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                long tmp;
+
+            long in1, in2;
+
+            in1 = (long)(X[rs1]);
+            in2 = (unsigned long)(X[rs2]);
+            tmp = in1*in2;
+            tmp = (tmp >> 32);
+            X[rd] = (unsigned int)(tmp);
+            }
+        }
+        // Integer division.
+        OpenASIP_base_DIV {
+            encoding: 7'b0011100 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                if (X[rs2] != 0) {
+
+                    X[rd] = (signed<32>)(
+                	((signed<32>)(X[rs1]) / (signed<32>)(X[rs2])));
+                }
+            }
+        }
+        // Unsigned integer division.
+        OpenASIP_base_DIVU {
+            encoding: 7'b0011101 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                if (X[rs2] != 0) {
+
+                    X[rd] = X[rs1] / X[rs2];
+                }
+            }
+        }
+        // Multiply and accumulate (signed integer).
+        OpenASIP_base_MAC {
+            encoding: rs3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0110011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}, {name(rs3)}";
+            behavior: {
+                signed<32> t1 = X[rs2]*X[rs3];
+                X[rd] = t1 + X[rs1];
+            }
+        }
+        // Rotate left.
+        OpenASIP_base_ROTL {
+            encoding: 7'b0011110 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                unsigned<32> in1 = X[rs1];
+                unsigned<32> in2 = X[rs2];
+                in2 = in2 % 32;
+                X[rd] = (in1 << in2) | (in1 >> (32 - in2 ));
+            }
+        }
+        // Rotate right.
+        OpenASIP_base_ROTR {
+            encoding: 7'b0011111 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                unsigned<32> in1 = X[rs1];
+                unsigned<32> in2 = X[rs2];
+                in2 = in2 % 32;
+                X[rd] = (in1 >> in2) | (in1 << (32 - in2));
+            }
+        }
+        // Integer modulo.
+        OpenASIP_base_MOD {
+            encoding: 7'b0100000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                if (X[rs2] != 0) {
+
+                    signed<32> in1 = (signed<32>)(X[rs1]);
+                    signed<32> in2 = (signed<32>)(X[rs2]);
+                    signed<32> out1 = in1 % in2;
+                    X[rd] = (signed<32>)(out1);
+                }
+            }
+        }
+        // Integer remainder.
+        OpenASIP_base_REM {
+            encoding: 7'b0100001 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                if (X[rs2] != 0) {
+
+                    signed<32> in1 = (signed<32>)(X[rs1]);
+                    signed<32> in2 = (signed<32>)(X[rs2]);
+                    signed<32> out1 = remainder(in1,in2);
+                    X[rd] = (signed<32>)(out1);
+                }
+            }
+        }
+        // Integer modulo (unsigned)
+        OpenASIP_base_MODU {
+            encoding: 7'b0100010 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                if (X[rs2] != 0) {
+
+                    unsigned<32> tempIn1 = X[rs1];
+                    unsigned<32> tempIn2 = X[rs2];
+                    unsigned int in1 = (unsigned int)(tempIn1);
+                    unsigned int in2 = (unsigned int)(tempIn2);
+
+                    unsigned int out1 = in1 % in2;
+
+                    X[rd] = (unsigned<32>)(out1);
+                }
+            }
+        }
+        // Integer remainder (unsigned)
+        OpenASIP_base_REMU {
+            encoding: 7'b0100011 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+            behavior: {
+                if (X[rs2] != 0) {
+
+                    unsigned<32> tempIn1 = X[rs1];
+                    unsigned<32> tempIn2 = X[rs2];
+                    unsigned int in1 = (unsigned int)(tempIn1);
+                    unsigned int in2 = (unsigned int)(tempIn2);
+
+                    unsigned int out1 = remainder(in1, in2);
+
+                    X[rd] = (unsigned<32>)(out1);
+                }
+            }
+        }
+        // Leftmost Bit Detection (from TI C64X). Counts the number of 0's or 1's in the bit representation of operand 1 before the first 1 or 0. 2nd operand is used to tell whether to search for a 0 or 1.
+        // OpenASIP_base_LMBD {
+        //     encoding: 7'b0100100 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+        //     assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}";
+        //     behavior: {
+        //         int foundBits = 0;
+        //         unsigned<32> word = X[rs1];
+        //         const unsigned<32> bitToSearch = X[rs2];
+        //         if (bitToSearch <= 1) {
+        //             const int BITS_IN_WORD = 4*8;
+        //             for (; foundBits <= BITS_IN_WORD; ++foundBits) {
+        //                 // check the top bit: is the searched bit?
+        //                 if (word >> (BITS_IN_WORD - 1) == bitToSearch)
+        //                     break; // found the bit
+        //                 word <<= 1;
+        //             }
+        //             X[rd] = foundBits;
+        //         }
+        //     }
+        // }
+        // Select one of two values
+        OpenASIP_base_SELECT {
+            encoding: rs3[4:0] :: rs2[4:0] :: rs1[4:0] :: 3'b001 :: rd[4:0] :: 7'b0110011;
+            assembly: "{name(rd1)}, {name(rs1)}, {name(rs2)}, {name(rs3)}";
+            behavior: {
+                if (X[rs3] & 1) {
+                X[rd] = X[rs1];
+            } else {
+                X[rd] = X[rs2];
+            }
+            //X[rd] = ((X[rs3]) & 1) ? X[rs1] : X[rs2];
+            }
+        }
+    }
+}
