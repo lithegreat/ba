@@ -190,15 +190,8 @@ class OperationParser:
                         mask &= df_operations[col_name] != "RawData"
                 col_name_width = f"io_{i}_element_width"
                 if col_name_width in df_operations.columns:
-                    df_operations[col_name_width] = df_operations[
-                        col_name_width
-                    ].replace("", "-1")
-                    mask &= (
-                        df_operations[col_name_width]
-                        .fillna(0)
-                        .astype(int)
-                        .isin(element_widths)
-                    )
+                    df_operations[col_name_width] = pd.to_numeric(df_operations[col_name_width], errors='coerce').fillna(-1).astype(int)
+                    mask &= df_operations[col_name_width].isin(element_widths)
 
             # Filter based on outputs
             for i in range(1, max_outputs):
@@ -213,15 +206,8 @@ class OperationParser:
 
                 col_name_width = f"oo_{i}_element_width"
                 if col_name_width in df_operations.columns:
-                    df_operations[col_name_width] = df_operations[
-                        col_name_width
-                    ].replace("", "-1")
-                    mask &= (
-                        df_operations[col_name_width]
-                        .fillna(0)
-                        .astype(int)
-                        .isin(element_widths)
-                    )
+                    df_operations[col_name_width] = pd.to_numeric(df_operations[col_name_width], errors='coerce').fillna(-1).astype(int)
+                    mask &= df_operations[col_name_width].isin(element_widths)
 
             # Additional filters
             mask &= df_operations["inputs"].fillna(0).astype(int) >= min_inputs
@@ -239,11 +225,11 @@ class OperationParser:
                 mask &= ~df_operations["is_branch"]
 
             if is_element_count_1:
-                for i in range(1, max(2, max_inputs) + 1):
-                    mask &= (
-                        df_operations[f"io_{i}_element_count"].fillna(0).astype(int)
-                        == 1
-                    )
+                for i in range(1, max_inputs):
+                    col_name_count = f"io_{i}_element_count"
+                    if col_name_count in df_operations.columns:
+                        df_operations[col_name_count] = pd.to_numeric(df_operations[col_name_count], errors='coerce').fillna(0).astype(int)
+                        mask &= df_operations[col_name_count] == 1
 
             if no_side_effects:
                 mask &= ~df_operations["has_side_effects"]
