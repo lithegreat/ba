@@ -1,3 +1,5 @@
+import "../../toolchain/etiss_arch_riscv/rv_base/RV32I.core_desc"
+
 InstructionSet OpenASIP_base extends RV32I {
     functions{
         // Returns the minimum of two signed integers.

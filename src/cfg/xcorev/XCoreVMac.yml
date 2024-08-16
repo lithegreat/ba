@@ -1,0 +1,14 @@
+---
+extensions:
+  XCoreVMac:
+    # feature: XCVmac
+    # arch: xcvmac
+    version: "1.0"
+    experimental: false
+    vendor: true
+passes:
+  per_model:
+    XCoreVMac:
+      overrides:
+        convert_models:
+          prefix: "SEAL5_"

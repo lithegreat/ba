@@ -1,0 +1,14 @@
+---
+extensions:
+  XCoreVSimd:
+    # feature: XCVsimd
+    # arch: xcvsimd
+    version: "1.0"
+    experimental: false
+    vendor: true
+passes:
+  per_model:
+    XCoreVSimd:
+      overrides:
+        convert_models:
+          prefix: "SEAL5_"

@@ -10,3 +10,4 @@
 **.xlsx
 Operations/*.cc
 /.idea/
+/build/

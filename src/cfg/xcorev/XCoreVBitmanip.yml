@@ -1,0 +1,14 @@
+---
+extensions:
+  XCoreVBitmanip:
+    # feature: XCVbitmanip
+    # arch: xcvbitmanip
+    version: "1.0"
+    experimental: false
+    vendor: true
+passes:
+  per_model:
+    XCoreVBitmanip:
+      overrides:
+        convert_models:
+          prefix: "SEAL5_"
