@@ -44,7 +44,7 @@ EXPORT = bool(int(os.environ.get("EXPORT", 1)))
 CLEANUP = bool(int(os.environ.get("CLEANUP", 0)))
 PROGRESS = bool(int(os.environ.get("PROGRESS", 1)))
 CLONE_DEPTH = bool(int(os.environ.get("CLONE_DEPTH", 1)))
-DEST = os.environ.get("DEST", "/tmp/seal5_llvm_demo").rstrip("/")
+DEST = os.environ.get("DEST", "./build/seal5_llvm_openasip").rstrip("/")
 NAME = os.environ.get("NAME", "openasip")
 
 seal5_flow = Seal5Flow(DEST, name=NAME)

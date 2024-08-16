@@ -335,7 +335,7 @@ def generate_encoding(operation_name, inputs, outputs, counters):
         func3 = f"3'b{func3_counter:03b}"
         func3_counter += 1
         encoding = (
-            f"rs3[4:0] :: rs2[4:0] :: rs1[4:0] :: {func3} :: rd[4:0] :: 7'b0110011"
+            f"rs3[4:0] :: 2'b00 :: rs2[4:0] :: rs1[4:0] :: {func3} :: rd[4:0] :: 7'b0110011"
         )
     else:
         print(f"Error: Unsupported number of inputs and outputs for {operation_name}")
@@ -431,7 +431,7 @@ def generate_instruction_set(
             )
             operands_list = []
             for i in range(outputs):
-                operands_list.append(f"{{name(rd{i+1})}}")
+                operands_list.append(f"{{name(rd)}}")
             for i in range(inputs):
                 operands_list.append(f"{{name(rs{i+1})}}")
 
@@ -493,7 +493,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     filename = args.filename
     input_filepath = f"Operations/{filename}.xlsx"
-    output_directory = "src/CoreDSL"
+    output_directory = "src/cdslL"
 
     generate_instruction_set(
         input_filepath, output_directory, args.single_exec_operations, args.remove_RFS
