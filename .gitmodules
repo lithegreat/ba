@@ -1,3 +1,6 @@
 [submodule "openasip"]
 	path = openasip
 	url = https://github.com/cpc/openasip
+[submodule "mlonmcu"]
+	path = mlonmcu
+	url = https://github.com/tum-ei-eda/mlonmcu
