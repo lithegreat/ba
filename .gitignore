@@ -10,3 +10,4 @@
 Operations/*.cc
 /.idea/
 /build/
+/tmp/
