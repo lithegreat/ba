@@ -107,6 +107,7 @@ InstructionSet OpenASIP_base extends RV32I {
             encoding: 7'b0001001 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
             assembly: "{name(rd)}, {name(rs1)}, {name(rs2)}";
             behavior: {
+                signed<32> t1;
                 if (X[rs1 % RFS] == X[rs2 % RFS]) {
                     signed<32> t1 = 1;
                 } else {
