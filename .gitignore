@@ -11,3 +11,5 @@ Operations/*.cc
 /.idea/
 /build/
 /tmp/
+Thesis/*.pdf
+Thesis/*.gz
