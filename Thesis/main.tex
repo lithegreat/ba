@@ -1,6 +1,6 @@
 %%
 % This is an Overleaf template for Master's and Bachelor's theses
-% using the TUM Corporate Desing https://www.tum.de/cd
+% using the TUM Corporate Design https://www.tum.de/cd
 %
 % For further details on how to use the template, take a look at our
 % GitLab repository and browse through our test documents
@@ -20,12 +20,12 @@
 
 \documentclass[
   a4paper,            % paper size (a4paper, a5paper)
-  thesis=student,     % define the type of the thesis (student, phd, none)
+  % thesis=student,     % define the type of the thesis (student, phd, none)
   english,            % define the document language (english, german)
   % BCOR=5mm,           % define a binding offset for the document
   % coverBCOR=1cm,      % define a different binding offset for the cover page
   % coverpage=false,    % disable the cover page (e.g. if a tumcover is used)
-  % titlepage=false,    % disable the additional title page
+  titlepage=false,    % disable the additional title page
   % oneside,            % use onesided or twosided layout (oneside, twoside)
   % headmarks=true,     % enable headmarks (true, false)
   % font=times          % define main text font (helvet, times, palatino, libertine)
@@ -49,14 +49,14 @@
 
 % thesis metadata
 \title{Evaluation of OpenASIP Custom Operations in CoreDSL Ecosystem}
-\subtitle{Porting OpenASIP Custom Operations to CoreDSL Syntax}
+\subtitle{}
 \author{Hengsheng Li}
 
 \degree{Bachelor of Science (B.Sc.)}
 \dateSubmitted{01.10.2024}
 
 \examiner{Prof.\@~Dr.-Ing.\@ Ulf Schlichtmann}
-\supervisor{van Kempen, Philipp; M.Sc.}
+\supervisor{M.Sc. Philipp van Kempen}
 
 
 \begin{document}
@@ -71,11 +71,30 @@
 \chapter{Introduction}
 \input{chapters/intro.tex}
 
+\chapter{State of the Art}
+\input{chapters/State_of_the_Art.tex}
+
+\chapter{Prerequisites}
+\input{chapters/prerequisites.tex}
+
+\chapter*{Implementation}
+\input{chapters/implementation.tex}
+
+\chapter{Results}
+\input{chapters/results.tex}
+
+\chapter{Discussion}
+\input{chapters/discussion.tex}
+
+\chapter{Conclusion}
+\input{chapters/conclusion.tex}
+
 \appendix
 \chapter{Appendix}
 \lipsum[4]
 
-% \backmatter
-% \bibliography{}
+\backmatter
+\bibliographystyle{plain}
+\bibliography{chapters/references}
 
 \end{document}

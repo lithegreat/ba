@@ -1,9 +1,20 @@
-This is the introduction of the thesis.
+RISC-V, an open-source instruction set architecture (ISA), has seen widespread adoption across various domains due to its modular design and open nature.
+Its applications span embedded systems, where it powers devices like sensors and microcontrollers, and consumer electronics, including smartphones and smartwatches.
+In automotive technology, RISC-V is being integrated into advanced driver-assistance systems (ADAS) and infotainment units. Additionally,
+its flexibility makes it a popular choice in academic research for processor design and computer architecture experimentation.
+The versatility and open-source model of RISC-V facilitate innovation and customization, driving advancements in numerous technological sectors.
 
-\lipsum[1]
+To leverage this flexibility effectively, simulation and validation of custom instructions are essential.
+The ETISS (Extendable Translating Instruction Set Simulator) \cite{ETISS} provides a robust platform for instruction set simulation,
+offering the capability to model and test custom processor architectures.
+However, to fully utilize ETISS's capabilities, it is beneficial to integrate it with a flexible tool for defining custom instructions.
 
-\section{A section}
-\lipsum[2]
+OpenASIP 2.0 \cite{OpenASIP} is a co-design toolset designed to facilitate the customization of RISC-V-based processors,
+supporting RTL generation and high-level programming of custom instructions.
+By translating OpenASIP's custom instruction sets into CoreDSL \cite{CoreDSL} syntax—a descriptive language for hardware design—we can enhance the integration with ETISS.
+CoreDSL allows for a clear and flexible specification of custom instructions,
+which can be seamlessly applied to ETISS for comprehensive simulation and evaluation.
 
-\section{Another section}
-\lipsum[3]
+Thus, this paper focuses on translating OpenASIP's custom instruction sets into CoreDSL language and applying them within the ETISS framework.
+This approach aims to streamline the process of integrating and evaluating custom instructions,
+ultimately improving the effectiveness and efficiency of the simulation environment for RISC-V processors.
