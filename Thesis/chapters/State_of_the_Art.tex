@@ -1,1 +1,25 @@
-literature review
+\section*{Background}
+
+The RISC-V instruction set architecture (ISA) has gained prominence due to its open-source nature and flexibility, allowing for extensive customization.
+This adaptability is particularly valuable in the development of application-specific instruction-set processors (ASIPs),
+where processors are tailored to meet the specific needs of particular applications.
+
+\section*{Instruction Set Simulation and Customization}
+
+\textbf{ETISS} (Extendable Translating Instruction Set Simulator) \cite{ETISS} provides a comprehensive platform for simulating and testing custom processor architectures.
+ETISS supports the modeling of both functional and performance aspects of processors, making it a robust tool for evaluating custom ISAs.
+The simulator's extensibility allows for detailed exploration of custom instructions and their integration into different processor designs.
+
+\textbf{OpenASIP 2.0} \cite{OpenASIP} is a co-design toolset designed to streamline the customization of RISC-V-based processors.
+It supports the generation of Register Transfer Level (RTL) code and high-level programming of custom instructions.
+OpenASIP 2.0 allows for the efficient integration of custom operations by providing a framework for defining and validating new instructions.
+
+\textbf{CoreDSL} \cite{CoreDSL} is a descriptive language used for hardware design that facilitates the specification of custom instructions.
+It allows designers to define instruction sets in a clear and flexible manner, which can then be used to generate RTL code or integrate with simulation tools like ETISS.
+
+\section*{Current Advances}
+
+Recent advancements in the field have focused on enhancing the flexibility and efficiency of instruction set simulation and customization.
+Techniques for translating custom instructions into simulation environments have been developed to improve the accuracy and performance of evaluations.
+For instance, translating custom instruction sets from tools like OpenASIP into CoreDSL syntax enables seamless integration with simulators such as ETISS,
+allowing for comprehensive testing and validation.

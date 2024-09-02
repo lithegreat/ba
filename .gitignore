@@ -13,3 +13,4 @@ Operations/*.cc
 /tmp/
 Thesis/*.pdf
 Thesis/*.gz
+Thesis/*.bbl
