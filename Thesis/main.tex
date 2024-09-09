@@ -26,7 +26,7 @@
   % coverBCOR=1cm,      % define a different binding offset for the cover page
   coverpage=false,    % disable the cover page (e.g. if a tumcover is used)
   titlepage=false,    % disable the additional title page
-  twoside,            % use onesided or twosided layout (oneside, twoside)
+  oneside,            % use onesided or twosided layout (oneside, twoside)
   % headmarks=true,     % enable headmarks (true, false)
   font=times          % define main text font (helvet, times, palatino, libertine)
 ]{tumbook}
@@ -45,6 +45,25 @@
 
 % load additional packages
 \usepackage{lipsum}
+\usepackage{listings}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{lightgray},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    tabsize=2,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+}
 
 
 % thesis metadata
