@@ -54,7 +54,7 @@ seal5_flow.reset(settings=True, interactive=False)
 seal5_flow.clean(temp=True, patches=True, models=True, inputs=True, interactive=INTERACTIVE)
 
 if PREPATCHED:
-    if seal5_flow.repo is None or "seal5-demo-stage0" not in seal5_flow.repo.tags:
+    if seal5_flow.repo is None or "seal5-openasip-stage0" not in seal5_flow.repo.tags:
         raise RuntimeError("PREPATCHED can only be used after LLVM was patched at least once.")
 
 # Clone LLVM and init seal5 metadata directory
@@ -62,7 +62,7 @@ seal5_flow.initialize(
     clone=True,
     clone_url="https://github.com/llvm/llvm-project.git",
     # clone_ref="llvmorg-17.0.6",
-    clone_ref="seal5-demo-stage0" if PREPATCHED else "llvmorg-18.1.0-rc3",
+    clone_ref="seal5-openasip-stage0" if PREPATCHED else "llvmorg-18.1.0-rc3",
     clone_depth=CLONE_DEPTH,
     progress=PROGRESS,
     force=True,
@@ -71,25 +71,22 @@ seal5_flow.initialize(
 
 # Load CoreDSL inputs
 cdsl_files = [
+    # EXAMPLES_DIR / "cdsl" / "rv_openasip" / "OpenASIP_.core_desc",
     EXAMPLES_DIR / ".." / "cdsl" / "base.core_desc",
 ]
 seal5_flow.load(cdsl_files, verbose=VERBOSE, overwrite=True)
 
 # Load test inputs
-test_files = [
-    EXAMPLES_DIR / "tests" / "example" / "xexample32.test.s",
-    EXAMPLES_DIR / "tests" / "example" / "xexample32.test-invalid.s",
-    EXAMPLES_DIR / "tests" / "example" / "xexample32.test-codegen.ll",
-    EXAMPLES_DIR / "tests" / "example" / "test_subincacc.c",
-]
-# seal5_flow.load(test_files, verbose=VERBOSE, overwrite=True)
+test_files = []  # TODO
+seal5_flow.load(test_files, verbose=VERBOSE, overwrite=True)
 
 # Load YAML inputs
 cfg_files = [
+    # EXAMPLES_DIR / "cfg" / "openasip" / "OpenASIP.yml",  # TODO: move to other dir
+    EXAMPLES_DIR / ".." / "cfg" / "openasip" / "OpenASIP_base.yml",
     EXAMPLES_DIR / ".." / "cfg" / "llvm.yml",
     EXAMPLES_DIR / ".." / "cfg" / "filter.yml",
     EXAMPLES_DIR / ".." / "cfg" / "patches.yml",
-    EXAMPLES_DIR / ".." / "cfg" / "riscv.yml",
     EXAMPLES_DIR / ".." / "cfg" / "tests.yml",
     EXAMPLES_DIR / ".." / "cfg" / "passes.yml",
     EXAMPLES_DIR / ".." / "cfg" / "git.yml",
