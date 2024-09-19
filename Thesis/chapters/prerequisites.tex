@@ -2,12 +2,10 @@ To successfully port OpenASIP custom operations to CoreDSL and integrate them in
 it is essential to understand how OpenASIP defines operations using trigger code and XML representation.
 This section outlines the key aspects of these definitions and their conversion requirements.
 
-\section{OpenASIP Custom Operations}
-
 OpenASIP provides a framework for defining custom instructions using two main components: trigger code and XML representation.
 Understanding these components is crucial for translating OpenASIP instructions into CoreDSL format.
 
-\subsection{Trigger Code}
+\section{Trigger Code}
 
 In OpenASIP, the behavior of custom operations is defined using trigger code. This code specifies how inputs are processed to produce outputs.
 The trigger code is written in a domain-specific language tailored for describing operational logic.
@@ -24,17 +22,16 @@ Below is an example of trigger code for an integer addition operation:
   END_OPERATION(ADD)
 \end{lstlisting}
 
-In this example:
 \begin{itemize}
-    \item \texttt{OPERATION(ADD)} begins the definition of the ADD operation.
-    \item The \texttt{TRIGGER} block contains the logic where \texttt{IO(3)} is assigned the result of adding \texttt{IO(1)} and \texttt{IO(2)}.
-    \item \texttt{END_OPERATION(ADD)} concludes the operation definition.
+  \item \texttt{OPERATION(ADD)} begins the definition of the ADD operation.
+  \item The \texttt{TRIGGER} block contains the logic where \texttt{IO(3)} is assigned the result of adding \texttt{IO(1)} and \texttt{IO(2)}.
+  \item \texttt{END\_OPERATION(ADD)} concludes the operation definition.
 \end{itemize}
 
 The trigger code provides a concise way to define the logic for processing inputs and generating outputs.
 This code needs to be translated into CoreDSL syntax for simulation in ETISS.
 
-\subsection{XML Representation}
+\section{XML Representation}
 
 OpenASIP also uses XML to define the properties and semantics of custom operations.
 The XML representation describes the operation's inputs, outputs, and execution semantics.
