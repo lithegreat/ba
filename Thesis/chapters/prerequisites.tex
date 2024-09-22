@@ -1,73 +1,37 @@
-To successfully port OpenASIP custom operations to CoreDSL and integrate them into ETISS,
-it is essential to understand how OpenASIP defines operations using trigger code and XML representation.
-This section outlines the key aspects of these definitions and their conversion requirements.
+\section{LLVM}
 
-OpenASIP provides a framework for defining custom instructions using two main components: trigger code and XML representation.
-Understanding these components is crucial for translating OpenASIP instructions into CoreDSL format.
+LLVM (Low-Level Virtual Machine) is a versatile compiler infrastructure that supports the compilation of various programming languages to multiple target architectures. Its architecture consists of a collection of reusable compiler and toolchain technologies, providing a robust framework for both frontend and backend development.
 
-\section{Trigger Code}
+At its core, LLVM employs an intermediate representation (IR) that serves as a common code representation between source languages and target architectures. This IR is designed to be language-agnostic and can be optimized independently of the source code, enabling a wide range of optimization techniques to be applied uniformly across different languages.
 
-In OpenASIP, the behavior of custom operations is defined using trigger code. This code specifies how inputs are processed to produce outputs.
-The trigger code is written in a domain-specific language tailored for describing operational logic.
-Below is an example of trigger code for an integer addition operation:
+One of the key features of LLVM is its modularity, which allows developers to extend the compiler with new optimizations or target architectures without modifying existing components. This flexibility is particularly advantageous for research and development in custom instruction sets, facilitating rapid prototyping and experimentation.
 
-\begin{lstlisting}[caption={The trigger code of ADD}]
-  // ADD - integer add
-  OPERATION(ADD)
+The compilation process in LLVM typically comprises several stages:
 
-  TRIGGER
-      IO(3) = UINT(1) + UINT(2);
-  END_TRIGGER;
+\begin{enumerate}
+    \item \textbf{Frontend:} This component parses the source code and converts it into LLVM IR. Frontends can be developed for various programming languages, allowing LLVM to serve as a backend for diverse ecosystems.
 
-  END_OPERATION(ADD)
-\end{lstlisting}
+    \item \textbf{Optimization:} Once in IR form, LLVM applies a series of optimization passes that enhance performance, reduce code size, and improve overall efficiency. These optimizations can be tailored based on the specific characteristics of the target architecture.
 
-\begin{itemize}
-  \item \texttt{OPERATION(ADD)} begins the definition of the ADD operation.
-  \item The \texttt{TRIGGER} block contains the logic where \texttt{IO(3)} is assigned the result of adding \texttt{IO(1)} and \texttt{IO(2)}.
-  \item \texttt{END\_OPERATION(ADD)} concludes the operation definition.
-\end{itemize}
+    \item \textbf{Backend:} The backend is responsible for generating machine code specific to the target architecture. It leverages target-specific information to produce optimized and efficient binaries.
+\end{enumerate}
 
-The trigger code provides a concise way to define the logic for processing inputs and generating outputs.
-This code needs to be translated into CoreDSL syntax for simulation in ETISS.
+In the context of custom instruction sets, LLVM's design allows for seamless integration of vendor-defined extensions. By defining new instruction patterns and leveraging existing optimization frameworks, developers can enhance the performance of their applications without requiring deep knowledge of the underlying compiler infrastructure \cite{llvm}.
 
-\section{XML Representation}
+Overall, LLVM provides a powerful platform for compiling and optimizing code, making it an ideal choice for implementing and exploring custom ISAs. The capabilities of LLVM, particularly its support for autovectorization and advanced optimization techniques, directly align with the objectives of this research, facilitating the effective utilization of custom instruction sets in performance-critical applications.
 
-OpenASIP also uses XML to define the properties and semantics of custom operations.
-The XML representation describes the operation's inputs, outputs, and execution semantics.
-Here is an example of how the ADD operation is represented in XML:
 
-\begin{lstlisting}[caption={The XML representation of ADD}]
-  <operation>
-    <name>ADD</name>
-    <description>Integer addition. Output 3 is sum of inputs 1 and 2.</description>
-    <inputs>2</inputs>
-    <outputs>1</outputs>
-    <in element-count="1" element-width="32" id="1" type="SIntWord">
-      <can-swap>
-        <in id="2"/>
-      </can-swap>
-    </in>
-    <in element-count="1" element-width="32" id="2" type="SIntWord">
-      <can-swap>
-        <in id="1"/>
-      </can-swap>
-    </in>
-    <out element-count="1" element-width="32" id="3" type="SIntWord"/>
-    <trigger-semantics>
-      EXEC_OPERATION(add, IO(1), IO(2), IO(3));
-    </trigger-semantics>
-  </operation>
-\end{lstlisting}
+\section{M2-ISA-R}
+M2-ISA-R is a framework designed to facilitate the description and implementation of custom ISAs. It uses a metamodel-based approach that allows for a high level of abstraction when specifying both functional and structural components of a processor architecture. This flexibility in modeling makes it particularly useful for hardware-software co-design.
 
-In this XML representation:
-\begin{itemize}
-  \item \texttt{<name>} specifies the operation's name (ADD).
-  \item \texttt{<description>} provides a textual explanation of the operation.
-  \item \texttt{<inputs>} and \texttt{<outputs>} define the number of inputs and outputs.
-  \item \texttt{<in>} and \texttt{<out>} elements describe the details of each input and output, such as width and type.
-  \item \texttt{<trigger-semantics>} provides the execution logic for the operation, mapping directly to the trigger code.
-\end{itemize}
+The workflow of M2-ISA-R involves parsing the ISA description via a frontend that utilizes the ANTLR4 framework. It then generates Python-based metamodel classes to capture both the architectural and behavioral aspects of the processor. The backend produces architecture-specific plugins for simulation tools, the most important of which is the ETISS architecture plugin. This enables rapid creation of CPU models for ETISS, closing the gap between high-level ISA descriptions and functional simulation.
 
-The XML representation captures the essential properties and semantics of custom operations,
-which are necessary for filtering the operations.
+In this research, M2-ISA-R has been employed to automatically generate the ETISS CPU architecture plugin for a custom ISA, allowing the seamless integration of this architecture into the ETISS simulation framework. This significantly reduces the development time needed for functional verification and performance simulation of custom CPU designs \cite{RISCVSimulation}.
+
+\section{Seal5}
+
+This work builds upon the Seal5 framework, which provides a semi-automated flow for generating LLVM compiler support for custom RISC-V instruction set architectures (ISAs). Seal5 leverages a C-style ISA description language to facilitate the integration of vendor-defined instructions, allowing for efficient exploration and implementation of custom instructions tailored to specific applications.
+
+Seal5 enables the automatic generation of LLVM patches that cover a wide range of functionalities, from baseline assembly-level support to sophisticated compiler code generation patterns for scalar and vector instructions. The tool features a novel pattern generator approach focused on optimizing code generation for SIMD (Single Instruction, Multiple Data) instructions, including autovectorization capabilities.
+
+By utilizing Seal5, this research aims to convert a custom instruction set into a customized LLVM backend. This process significantly reduces development time and effort while achieving performance levels comparable to or exceeding those of manually implemented LLVM toolchains. The ability of Seal5 to support autovectorization enhances the execution efficiency of workloads, making it an invaluable asset for the exploration of custom ISA extensions \cite{Seal5}.
