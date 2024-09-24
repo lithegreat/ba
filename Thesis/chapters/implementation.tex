@@ -30,8 +30,8 @@ The generation of the CoreDSL template involves several key steps. First, an emp
     instructions {
         // Example for custom instruction
         OpenASIP_base_SHL1ADD {
-            encoding: 7'b0000000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
-            assembly: "{name(rd)}, {name(rs1)}, {name(rs2)}";
+            encoding: // Encoding will be generated here
+            assembly: // Assembly code will be generated here
             behavior: {
                 // Behavior code will be generated here
             }
@@ -43,11 +43,22 @@ The generation of the CoreDSL template involves several key steps. First, an emp
 
 \subsection{Inline Function}
 
-The inline functions required for custom operations are defined as part of the \textit{trigger codes} within the OpenASIP framework. Although OpenASIP provides the trigger code definition, it does not include the actual implementation of these inline functions. Fortunately, these functions are relatively simple to implement and are inserted at the beginning of the CoreDSL file. This ensures that all behavior code for custom instructions can utilize these functions during execution.
+The inline functions required for custom operations are defined as part of the \textit{trigger codes} within the OpenASIP framework. Although OpenASIP provides the trigger code definition, it does not include the actual implementation of these inline functions. Fortunately, these functions are relatively simple to implement and are inserted at the beginning of the CoreDSL file. This ensures that all behavior code for custom instructions can utilize these functions during execution. The following example demonstrates how inline functions are defined in the CoreDSL template:
+
+\begin{lstlisting}
+    // Returns the minimum of two signed integers.
+    signed<32> min(signed<32> a, signed<32> b) [[inline]] {
+        return (a < b) ? a : b;
+    }
+\end{lstlisting}
 
 \subsection{Auto Encoding and Assembly}
 
-The encoding process for custom instructions is handled automatically by the program. As the filtered operations are processed sequentially, each instruction is assigned an encoding that follows the RISC-V extension format. For example, instructions with two input registers (\texttt{rs1} and \texttt{rs2}) and one output register (\texttt{rd}) will be encoded in a standard 32-bit RISC-V format.
+The encoding process for custom instructions is handled automatically by the program. As the filtered operations are processed sequentially, each instruction is assigned an encoding that follows the RISC-V extension format. For example, instructions with two input registers (\texttt{rs1} and \texttt{rs2}) and one output register (\texttt{rd}) will be encoded in a standard 32-bit RISC-V format R-type instruction. Here is an example of how the encoding is generated:
+
+\begin{lstlisting}
+  encoding: 7'b0000000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+\end{lstlisting}
 
 For assembly code generation, the program analyzes the XML-defined instruction attributes, such as the number of source and destination registers. Based on these attributes, it generates the corresponding assembly format string, ensuring that the generated assembly matches the intended behavior of each instruction. The following example shows how the registers are referenced in the assembly code:
 
@@ -61,23 +72,57 @@ This ensures that all operations are properly defined within the CoreDSL framewo
 
 The generation of behavior code for custom operations is a crucial step in translating operation semantics into executable instructions within the CoreDSL framework. This process primarily revolves around interpreting the trigger semantics provided for each operation and converting them into behavior code that can be executed by the target architecture.
 
-\subsection{Handling \texttt{single\_execute} Operations}
+% How to classify operations as single_exec_operation
+% non_single_exec_operation
+\begin{lstlisting}[caption={Non-Single Exec Operation Semantics Example},captionpos=b]
+    SimValue shifted;
+    EXEC_OPERATION(shl, IO(1), 1, shifted);
+    EXEC_OPERATION(add, shifted, IO(2), IO(3));
+\end{lstlisting}
+% single_exec_operation
+\begin{lstlisting}[caption={Single Exec Operation Semantics Example},captionpos=b]
+    EXEC_OPERATION(add, IO(1), IO(2), IO(3));
+\end{lstlisting}
 
-Operations classified as \texttt{single\_execute} are those that involve zero or exactly one \texttt{EXEC\_OPERATION}. These operations are simpler to handle, as their semantics are either minimal or require only a single execution step. The process of generating behavior code for \texttt{single\_execute} operations is as follows:
+The behavior code generation process in this framework involves two main types of operations: \texttt{single\_exec\_operation} and non-\texttt{single\_exec\_operation} operations. The approach to generating behavior code differs depending on the type of operation, and the handling of each is described below.
+
+\subsection{Handling \texttt{single\_exec\_operation}}
+
+For operations classified as \texttt{single\_exec\_operation}, which involve exactly zero or one \texttt{EXEC\_OPERATION}, the process is relatively straightforward. The trigger code for these operations is directly searched within the parsed XML file, and once found, it is transformed into behavior code for the CoreDSL template.
 
 \begin{enumerate}
-    \item \textbf{Search for Trigger Code}: The program first attempts to locate the corresponding trigger code from the parsed operation semantics. This code typically contains the behavior definition for the operation.
+    \item \textbf{Search for Trigger Code}: The system directly locates the corresponding trigger code for the operation. If the trigger code is found, it is translated and formatted according to the CoreDSL behavior syntax.
 
-    \item \textbf{Fallback for Missing Trigger Code}: If the trigger code is not found, the program uses a fallback approach. In this case, the tool looks for a base operation (i.e., a related or parent operation) that shares similar functionality. If a base operation is identified, its behavior code is transformed and reused. If no such base operation is available, a warning is issued, and the behavior code is generated as a placeholder or default behavior, depending on the requirements of the architecture.
+    \item \textbf{Behavior Code Translation}: The translation process involves adjusting the variable names and formatting to conform to the CoreDSL standard. For instance, custom register names are transformed into the CoreDSL format using \texttt{X[rs1]}, \texttt{X[rs2]}, and \texttt{X[rd]}.
 
     \item \textbf{Example}:
     \begin{lstlisting}
-        // Example of a fallback behavior code for a missing trigger
-        X[rd % RFS] = X[rs1 % RFS] + X[rs2 % RFS]; // Default operation: addition
+        // Translated behavior code for a single_exec_operation
+        X[rd % RFS] = X[rs1 % RFS] + X[rs2 % RFS]; // Simple addition
     \end{lstlisting}
 \end{enumerate}
 
-This approach ensures that even when the exact semantics are not available, the system can still produce a working instruction that adheres to general operation principles.
+\subsection{Handling Non-\texttt{single\_exec\_operation} Instructions}
+
+For operations that are not classified as \texttt{single\_exec\_operation}, OpenASIP does not provide a direct trigger code. Instead, the process requires extracting relevant properties from the XML representation and using those properties to identify the appropriate base operations (\texttt{based operations}). The steps for handling these more complex operations are as follows:
+
+\begin{enumerate}
+    \item \textbf{Extract Properties from XML}: The first step is to parse the XML file and extract key properties such as the number of inputs (\texttt{rs}) and outputs (\texttt{rd}), as well as other operation-specific semantics that define the behavior of the instruction.
+
+    \item \textbf{Identify Based Operations}: Once the necessary properties are extracted, the system searches for related base operations (\texttt{EXEC\_OPERATION}) that can be combined to define the full behavior of the instruction. These base operations may consist of multiple execution steps, each of which contributes to the final instruction's functionality.
+
+    \item \textbf{Combining Based Operations}: If multiple base operations are found, they are combined sequentially in the generated behavior code. Each base operation's trigger code is retrieved, transformed, and concatenated to form the full behavior.
+
+    \item \textbf{Example}:
+    \begin{lstlisting}
+        // Combined behavior code from multiple based operations
+        signed<32> shifted = X[rs1 % RFS] << 1;  // First base operation: shift left
+        X[rd % RFS] = shifted + X[rs2 % RFS];    // Second base operation: addition
+    \end{lstlisting}
+
+    \item \textbf{Modifying Variable Names}: Based on the extracted input-output properties, the system adjusts the variable names in the behavior code to align with the correct registers. For example, if the XML specifies different register mappings or custom variables, the tool replaces them with the standard \texttt{X[rs1]}, \texttt{X[rs2]}, and \texttt{X[rd]} syntax used in CoreDSL.
+    \item
+\end{enumerate}
 
 \subsection{Handling Different Variable Names}
 
@@ -86,48 +131,19 @@ In some cases, variable names in the trigger code might differ from the expected
 \begin{enumerate}
     \item \textbf{Pattern Matching and Variable Mapping}: The tool applies pattern matching to identify variables in the trigger code (e.g., \texttt{rs1}, \texttt{rs2}, \texttt{rd}) and maps them to the expected format used in the target architecture. This ensures consistency in variable naming across all operations.
 
-    \item \textbf{Renaming Strategy}: If the trigger code uses custom variable names (e.g., \texttt{temp\_reg} or \texttt{intermediate\_value}), the tool automatically replaces these with the standard naming convention used in CoreDSL (such as \texttt{X[rs1]}, \texttt{X[rs2]}, \texttt{X[rd]}). This is done using regular expressions to match and substitute variable names accordingly.
+    \item \textbf{Renaming Strategy}: If the trigger code uses custom variable names (e.g., \texttt{temp\_reg}), the tool automatically replaces these with the standard naming convention used in CoreDSL . This is done using regular expressions to match and substitute variable names accordingly.
 
     \item \textbf{Example}:
     \begin{lstlisting}
         // Before transformation: uses custom variable names
-        temp_reg = X[rs1] + X[rs2];
-        intermediate_value = temp_reg * 2;
+        IO(3) = UINT(1) + UINT(2);
 
         // After transformation: standard variable names
         X[rd % RFS] = X[rs1 % RFS] + X[rs2 % RFS];
-        X[rd % RFS] = X[rd % RFS] * 2;
     \end{lstlisting}
 \end{enumerate}
 
 This automatic renaming ensures that all behavior code conforms to the same format, regardless of the original trigger code's naming conventions.
-
-\subsection{Handling Missing or Incomplete Trigger Code}
-
-There are cases where the provided trigger code is incomplete or missing certain details, such as variable initialization or conditional checks. To handle these situations, the tool applies several strategies:
-
-\begin{enumerate}
-    \item \textbf{Default Values for Missing Variables}: If a required variable is missing or uninitialized in the trigger code, the tool inserts default values or initialization based on the context of the operation. For instance, if a result register (\texttt{rd}) is not initialized, it may be set to a default value like zero or an identity element (e.g., 1 for multiplication).
-
-    \item \textbf{Handling Conditional Logic}: If the trigger code includes conditional statements (e.g., \texttt{if} conditions) without complete implementation, the tool generates the necessary control flow structures. For example, if a condition involves checking the value of a register, the tool ensures that the check is properly implemented and that the code handles both the true and false branches.
-
-    \item \textbf{Example}:
-    \begin{lstlisting}
-        // Incomplete conditional logic
-        if (X[rs2] == 0) {
-            // Missing else branch
-        }
-
-        // Completed by the tool
-        if (X[rs2 % RFS] == 0) {
-            X[rd % RFS] = 0;  // Handle divide by zero
-        } else {
-            X[rd % RFS] = X[rs1 % RFS] / X[rs2 % RFS];  // Normal division
-        }
-    \end{lstlisting}
-\end{enumerate}
-
-By filling in missing parts of the code, the tool ensures that the behavior of the instruction remains consistent and functional.
 
 \subsection{Handling Other Corner Cases}
 
@@ -143,16 +159,66 @@ In addition to the common cases mentioned above, the tool also addresses several
 
 \subsection{Final Behavior Code Generation}
 
-The final behavior code is generated by combining the transformed trigger code, any required fallback operations, and additional corner case handling. This ensures that each operation is fully defined within the CoreDSL framework and can be executed correctly on the target architecture. The behavior code is then inserted into the CoreDSL template, completing the generation process.
+The final behavior code is generated by combining the transformed trigger code for \texttt{single\_exec\_operation} or the combined base operations for non-\texttt{single\_exec\_operation} instructions. This ensures that each operation is fully defined within the CoreDSL framework and can be executed correctly on the target architecture.
+
+The behavior code is then inserted into the CoreDSL template, completing the generation process for each custom instruction.
 
 \begin{lstlisting}
-// Example of final behavior code
-if (X[rs2 % RFS] == 0) {
-    X[rd % RFS] = 0;  // Handle divide by zero
-} else {
-    X[rd % RFS] = X[rs1 % RFS] / X[rs2 % RFS];
+// Example of final behavior code for a combined operation
+// Arithmetic shift right (sign bit duplicated). Input 1 is value to be shifted and input 2 is shift amount. Output 3 is result from operation.
+signed<32> int1 = (signed<32>)(X[rs1 % RFS]);
+signed<32> int2 = (signed<32>)(X[rs2 % RFS]);
+// Check if shift amount is greater than minimum of register width and 32
+if (int2 > min(
+        (signed<32>)(BWIDTH(X[rs1 % RFS])),
+        (signed<32>)(32))) {
+    X[rd % RFS] = 0;
 }
-X[rd % RFS] = X[rd % RFS] + 1;  // Additional operation
+
+signed<32> int3 = int1 >> int2;
+X[rd % RFS] = (signed<32>)(int3);
 \end{lstlisting}
 
-This process ensures that all custom operations are correctly implemented and optimized for their respective architectures, regardless of the complexity of the trigger semantics or the specific requirements of the operation.
+By handling both simple and complex cases, this approach ensures that the generated behavior code is both comprehensive and tailored to the specific needs of each instruction.
+
+\section{Code Generation}
+
+The final stage of the implementation workflow involves generating the complete CoreDSL code for the custom instruction set. This process combines the CoreDSL template with the behavior code for each custom operation, resulting in a fully defined instruction set that can be integrated into the M2-ISA-R architecture.
+
+\section{Test with M2-ISA-R}
+
+During the development process, M2-ISA-R was utilized to verify the correctness of the generated CoreDSL code and identify potential issues. M2-ISA-R provides a comprehensive framework for testing the functionality of custom instruction sets by parsing the CoreDSL and generating the corresponding ETISS plugins.
+
+\subsection{Error Detection}
+
+Throughout the code generation phase, M2-ISA-R was used to validate the syntax and semantics of the generated CoreDSL instructions. The tool was instrumental in identifying errors related to:
+
+\begin{itemize}
+    \item \textbf{Syntax Errors}: M2-ISA-R automatically checks for syntax inconsistencies within the CoreDSL files. Any improperly formatted code, missing keywords, or incorrect structure was flagged for correction.
+    \item \textbf{Behavioral Semantics}: M2-ISA-R also validated the behavior code for each instruction, ensuring that the execution semantics were correctly translated from the original XML description.
+    \item \textbf{Variable Mismatches}: Issues related to incorrect variable naming or mismatches between input-output registers were quickly detected, allowing for prompt corrections in the code generation process.
+\end{itemize}
+
+Each time an issue was identified by M2-ISA-R, the error messages provided guidance on where and how the problem could be resolved. This allowed for an iterative process where code could be quickly corrected based on the tool's feedback.
+
+\subsection{Iterative Debugging and Error Resolution}
+
+As errors were identified, corrections were made iteratively:
+
+\begin{enumerate}
+    \item \textbf{Syntax Corrections}: Syntax errors, such as missing semicolons, misplaced braces, or improperly formatted CoreDSL code, were corrected immediately after detection.
+    \item \textbf{Behavior Code Adjustments}: If M2-ISA-R detected inconsistencies in the behavior code, such as incorrect execution semantics or uninitialized variables, the tool provided clear feedback that allowed for prompt adjustments. This was particularly useful for ensuring that complex instructions with multiple base operations were executed in the correct sequence.
+    \item \textbf{Refinement of Variable Names}: In some cases, variable names in the behavior code did not match the expected register format. M2-ISA-R provided error messages that pointed out these mismatches, prompting revisions in the generated code to ensure that input and output registers were correctly assigned.
+\end{enumerate}
+
+\subsection{Final Code Generation for ETISS}
+
+After resolving all detected errors, M2-ISA-R was used to generate the final ETISS plugin. The tool parsed the corrected CoreDSL code and produced the necessary architecture plugin for ETISS. This plugin was then integrated into the ETISS framework, allowing the custom instruction set to be simulated and tested within a realistic RISC-V environment.
+
+The use of M2-ISA-R ensured that the CoreDSL code was syntactically correct, semantically meaningful, and fully compatible with ETISS. This iterative testing and debugging process was crucial for developing a robust and error-free instruction set.
+
+\subsection{Testing with ETISS}
+
+With the ETISS plugin generated by M2-ISA-R, the custom instruction set was ready for testing. ETISS was used to simulate the instruction set on various machine learning models and workloads, allowing for performance evaluation and validation of the custom extensions.
+
+The final tests confirmed that the generated instructions were executed correctly within ETISS, and performance metrics were collected for further analysis.
