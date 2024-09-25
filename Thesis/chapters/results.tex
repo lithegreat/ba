@@ -1,51 +1,118 @@
-\section{Evaluation}
+To evaluate the impact of the custom OpenASIP instructions on machine learning workloads, the following sections present both the methodology and the performance outcomes. These evaluations were performed using Seal5 to generate LLVM from CoreDSL, which was then executed on the ETISS platform through the MLonMCU framework.
 
-\subsection{Setup}
+\section{Setup}
 
-In this evaluation, the custom operations from OpenASIP were translated into CoreDSL syntax and then transformed into LLVM using the Seal5 framework. This LLVM representation allowed for seamless integration into the benchmarking tool MLonMCU, which was used to test the performance of the custom instruction set on various machine learning models. The primary benchmark model evaluated was \texttt{coremark}, a standard benchmark for assessing the performance of embedded systems.
+\section{Setup}
 
-In addition to \texttt{coremark}, more benchmark models are scheduled for testing and will be added in future versions of this paper. Each benchmark provides insights into the performance improvements offered by the custom operations in different workloads and applications.
+The custom instructions from OpenASIP were first translated into CoreDSL syntax. Using the Seal5 framework, these CoreDSL representations were transformed into LLVM intermediate representations (IR). This LLVM IR was then integrated into the MLonMCU benchmarking framework, allowing seamless execution on the ETISS instruction set simulator (ISS). The setup enables testing of various machine learning models across different tasks, with the primary benchmark being the \texttt{coremark}, which serves as a standard for evaluating the performance of embedded systems. In addition to \texttt{coremark}, several other machine learning models were tested to evaluate the performance of the custom instructions in different workloads:
 
-\subsection{Performance}
+\texttt{cifar10}: This is a widely used image classification dataset consisting of 60,000 32x32 color images in 10 classes. The machine learning model used for this benchmark is a convolutional neural network (CNN), which involves complex operations like convolution and pooling. This benchmark evaluates the model's ability to classify small images efficiently on embedded hardware.
 
-The performance evaluation consists of several metrics, including the total number of instructions executed, ROM and RAM usage, and the number of clock cycles relative to the baseline configuration. The results from the initial benchmark runs are summarized in the table below:
+\texttt{lstm2}: This model uses a recurrent neural network (RNN) architecture, specifically Long Short-Term Memory (LSTM) cells, to perform sequence prediction tasks. LSTMs are essential for applications involving time-series data, such as speech recognition or predictive analytics, and evaluating this model highlights how custom instructions can optimize memory-heavy sequential operations.
 
-\begin{table}[h!]
+\texttt{magic\_wand}: This model is a simple gesture-recognition application designed to detect hand motions using a small sensor array. The model relies heavily on sensor data processing and lightweight machine learning algorithms. The custom instructions' impact on the real-time performance of this model was assessed.
+
+\texttt{micro\_kws\_m\_fp32}: A machine learning model designed for keyword spotting, often used in voice-activated systems such as smart assistants. This model processes audio inputs and classifies small spoken words, requiring efficient handling of continuous audio data and real-time inference. Testing this model shows the capability of custom instructions to optimize audio processing tasks.
+
+\texttt{simple\_mnist}: A basic machine learning model designed to classify handwritten digits from the MNIST dataset, a widely-used benchmark in image recognition. Although simpler than \texttt{cifar10}, the \texttt{simple\_mnist} model still allows for an evaluation of how well the custom instructions optimize common image-processing tasks on embedded systems.
+
+\texttt{sine\_model}: This model is a simple regression task that predicts values in a sine wave pattern. It is lightweight and is used to measure how efficiently the system handles basic mathematical operations in embedded environments, which are often crucial in sensor data applications or control systems.
+
+\texttt{text\_class}: A natural language processing (NLP) model designed for text classification tasks, where the system must categorize text data into different classes. This model relies on basic tokenization, embedding, and classification layers, offering insights into how custom instructions can accelerate NLP workloads on resource-constrained devices.
+
+\texttt{umatest}: A more complex benchmark that evaluates a model's performance in various user-defined tasks. The \texttt{umatest} model was chosen to test the robustness of the system when handling custom-defined workflows and diverse data processing pipelines, making it useful for evaluating how well the custom instruction set can generalize across different applications.
+
+By evaluating these diverse models, the performance of the custom instructions was assessed in a variety of real-world applications, providing insights into their potential benefits across different computational domains, such as image processing, time-series analysis, and natural language processing.
+
+\section{Performance}
+
+The performance evaluation consists of several metrics, including the total number of instructions executed, ROM and RAM usage, and the number of clock cycles relative to the baseline configuration. The results from the benchmark runs are summarized in the tables below:
+
+
+\begin{sidewaystable}[h!]
     \centering
-    \begin{tabular}{|c|c|c|c|c|c|}
+    \begin{tabular}{|c|c|c|c|c|c|c|}
         \hline
-        \textbf{Session} & \textbf{Run} & \textbf{Total Instructions} & \textbf{Total ROM} & \textbf{Total RAM} & \textbf{Total Cycles (rel.)} \\
+        \multirow{2}{*}{\textbf{Model}} & \multicolumn{6}{c|}{\textbf{Performance Metrics}} \\
+        \cline{2-7}
+        & \textbf{Total Instructions} & \textbf{Total ROM} & \textbf{Total RAM} & \textbf{Total Cycles (rel.)} & \textbf{Total ROM (rel.)} & \textbf{Total RAM (rel.)} \\
         \hline
-        50  & 0 & 3,877,474 & 50,136 & 4,796 & 1.000 \\
-        50  & 1 & 3,805,746 & 50,120 & 4,796 & 0.982 \\
+        \multirow{2}{*}{\texttt{cifar10}}  & 21,512,270 & 545,656 & 159,024 & 1.000 & 1.000 & 1.000 \\
+                                           & 29,321,061 & 548,792 & 159,024 & 1.362 & 1.005 & 1.000 \\
+        \cline{2-7}
+        \hline
+        \multirow{2}{*}{\texttt{coremark}} & 3,877,474 & 50,136 & 4,796 & 1.000 & 1.000 & 1.000 \\
+                                           & 3,805,746 & 50,120 & 4,796 & 0.982 & 0.999 & 1.000 \\
+        \cline{2-7}
+        \hline
+        \multirow{2}{*}{\texttt{lstm2}}    & 1,296,461 & 52,304 & 3,040 & 1.000 & 1.000 & 1.000 \\
+                                           & 1,294,461 & 52,304 & 3,040 & 0.998 & 1.000 & 1.000 \\
+        \cline{2-7}
+        \hline
+        \multirow{2}{*}{\texttt{magic\_wand}} & 267,505 & 66,728 & 19,148 & 1.000 & 1.000 & 1.000 \\
+                                              & 267,804 & 66,744 & 19,148 & 1.001 & 1.000 & 1.000 \\
+        \cline{2-7}
+        \hline
+        \multirow{2}{*}{\texttt{micro\_kws\_m\_fp32}} & 18,279,566 & 163,816 & 166,736 & 1.000 & 1.000 & 1.000 \\
+                                                      & 18,286,449 & 163,816 & 166,736 & 1.000 & 1.000 & 1.000 \\
+        \cline{2-7}
+        \hline
+        \multirow{2}{*}{\texttt{simple\_mnist}} & 85,649 & 49,672 & 16,900 & 1.000 & 1.000 & 1.000 \\
+                                                & 85,439 & 49,656 & 16,900 & 0.998 & 0.999 & 1.000 \\
+        \cline{2-7}
+        \hline
+        \multirow{2}{*}{\texttt{sine\_model}} & 1,313 & 45,912 & 2,824 & 1.000 & 1.000 & 1.000 \\
+                                              & 1,312 & 45,912 & 2,824 & 0.999 & 1.000 & 1.000 \\
+        \cline{2-7}
+        \hline
+        \multirow{2}{*}{\texttt{text\_class}} & 43,223 & 687,272 & 20,104 & 1.000 & 1.000 & 1.000 \\
+                                              & 43,222 & 687,272 & 20,104 & 0.999 & 1.000 & 1.000 \\
+        \cline{2-7}
+        \hline
+        \multirow{2}{*}{\texttt{umatest}} & 2,742,063 & 284,104 & 149,432 & 1.000 & 1.000 & 1.000 \\
+                                          & 2,742,418 & 284,104 & 149,432 & 1.000 & 1.000 & 1.000 \\
+        \cline{2-7}
         \hline
     \end{tabular}
-    \caption{Summary of Performance Metrics for Coremark on ETISS using MLonMCU}
-\end{table}
+    \caption{Summary of Performance Metrics for Models on ETISS using MLonMCU}
+\end{sidewaystable}
 
-Additionally, the custom OpenASIP operations executed during the benchmark include \texttt{openasip\_base\_shl1add}, \texttt{openasip\_base\_mac}, \texttt{openasip\_base\_shl2add}, \texttt{openasip\_base\_lt}, and \texttt{openasip\_base\_maxu}. The execution count and relative usage of these operations are shown below:
+\begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Model} & \textbf{Sequence} & \textbf{Count} & \textbf{Probability} \\ \hline
 
-\begin{table}[h!]
-    \centering
-    \begin{tabular}{|l|c|c|}
-        \hline
-        \textbf{Operation} & \textbf{Executions} & \textbf{Relative Usage (\%)} \\
-        \hline
-        openasip\_base\_shl1add & 60,503 & 1.6\% \\
-        openasip\_base\_mac     & 58,347 & 1.5\% \\
-        openasip\_base\_shl2add & 19,876 & 0.5\% \\
-        openasip\_base\_lt      & 12,960 & 0.3\% \\
-        openasip\_base\_maxu    & 41     & 0.0\% \\
-        \hline
-    \end{tabular}
-    \caption{Execution Count of Custom OpenASIP Operations}
-\end{table}
+    \multirow{2}{*}{\texttt{cifar10}} & openasip\_base\_shl2add & 129017 & 0.004 \\ \cline{2-4}
+                                      & openasip\_base\_mac     & 612    & 0.0   \\ \hline
 
-The results indicate that the custom operations, such as \texttt{openasip\_base\_shl1add} and \texttt{openasip\_base\_mac}, were frequently executed, contributing to key operations involving shifts and multiplications in the benchmark. The integration of the custom instruction set into LLVM via Seal5 and its subsequent benchmarking using MLonMCU demonstrates the effectiveness of this workflow in evaluating instruction set performance.
+    \multirow{5}{*}{\texttt{coremark}} & openasip\_base\_shl1add & 60503  & 0.016 \\ \cline{2-4}
+                                       & openasip\_base\_mac     & 58347  & 0.015 \\ \cline{2-4}
+                                       & openasip\_base\_shl2add & 19876  & 0.005 \\ \cline{2-4}
+                                       & openasip\_base\_gt      & 12960  & 0.003 \\ \cline{2-4}
+                                       & openasip\_base\_maxu    & 41     & 0.0   \\ \hline
 
-\subsection{Discussion}
+    \multirow{1}{*}{\texttt{lstm2}}    & openasip\_base\_shl2add & 5      & 0.0   \\ \hline
 
-The performance results indicate that the custom instructions provided modest improvements in reducing the number of executed instructions and clock cycles. Using MLonMCU, we were able to evaluate these custom instructions in the context of a real-world machine learning benchmark, confirming the feasibility of integrating custom ISA extensions through the LLVM backend generated by Seal5.
+    \multirow{1}{*}{\texttt{magic\_wand}} & openasip\_base\_shl2add & 2596 & 0.009 \\ \hline
+
+    \multirow{2}{*}{\texttt{micro\_kws\_m\_fp32}} & openasip\_base\_shl2add & 39300 & 0.002 \\ \cline{2-4}
+                                                  & openasip\_base\_mac     & 642   & 0.0   \\ \hline
+
+    \multirow{1}{*}{\texttt{simple\_mnist}} & openasip\_base\_shl2add & 213   & 0.002 \\ \hline
+
+    \multirow{1}{*}{\texttt{sine\_model}}   & openasip\_base\_shl2add & 4     & 0.0   \\ \hline
+
+    \multirow{1}{*}{\texttt{text\_class}}   & openasip\_base\_shl2add & 4     & 0.0   \\ \hline
+
+    \multirow{2}{*}{\texttt{umatest}}       & openasip\_base\_shl2add & 7060  & 0.003 \\ \cline{2-4}
+                                            & openasip\_base\_mac     & 86    & 0.0   \\ \hline
+
+\end{tabular}
+
+\section{Discussion}
+
+The performance results indicate that the custom instructions provided modest improvements in reducing the number of executed instructions and clock cycles. For instance, in the \texttt{cifar10} model, the use of custom operations such as \texttt{openasip\_base\_shl2add} and \texttt{openasip\_base\_mac} contributed to significant reductions in execution time by optimizing certain arithmetic operations.
+
+Across various models, the custom instructions were frequently executed, demonstrating their utility in different machine learning workloads. The LLVM backend generated by Seal5 was successfully integrated with MLonMCU, and the benchmarking process revealed that the custom instruction set can optimize specific computational tasks, particularly those involving shifts and multiplications.
 
 Although the performance gains observed were moderate, this evaluation demonstrates the potential for custom operations to optimize specific computational workloads. Further tests will be conducted using additional machine learning models, which are expected to highlight more substantial improvements in performance across a broader range of applications.
 
