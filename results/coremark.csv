@@ -1,0 +1,6 @@
+Sequence,Count,Probability
+openasip_base_shl1add,60503,0.016
+openasip_base_mac,58347,0.015
+openasip_base_shl2add,19876,0.005
+openasip_base_gt,12960,0.003
+openasip_base_maxu,41,0.0
