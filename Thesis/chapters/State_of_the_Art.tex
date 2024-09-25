@@ -1,76 +1,9 @@
-\section{Existing Solutions and Approaches}
+The integration of custom instruction sets within application-specific instruction set processors (ASIPs) has become increasingly vital for enhancing performance in specialized applications, particularly in artificial intelligence (AI) and embedded systems. Recent studies underscore the importance of these custom instruction sets in addressing performance bottlenecks associated with memory access, which is critical for efficient operation in systems such as Deep Neural Networks (DNNs).
 
-\begin{enumerate}
+The work by Oh and Lee (2023) highlights the role of customizable instruction set architectures (ISAs) in reducing communication overhead and improving energy efficiency by integrating AI processors within general-purpose processors (GPPs) \cite{oh2023design}. This seamless integration allows for significant enhancements in throughput while minimizing the complexity typically associated with heterogeneous computing systems.
 
-    \item \textbf{RISC-V ISA Extensions:}
-    The RISC-V instruction set architecture (ISA) has gained significant traction due to its open-source and modular design, allowing extensive customization.
-    Recent research has provided a survey of RISC-V ISA extensions, covering various improvements and customizations aimed at enhancing processor performance and capabilities \cite{Risc-v}.
+Kumar et al. (2024) further contribute to this discussion by exploring an ISA extension for RISC-V focused on optimizing memory load and store operations—key operations in many embedded applications, especially those involving DNNs. Their study demonstrates a novel instruction that allows for double-word memory access, resulting in substantial reductions in clock cycles (approximately 50\%) and power consumption (around 30\%) during these operations, while maintaining only a minimal area overhead of about 4\% on a modified RISC-V platform. This work validates the need for efficient memory interaction to mitigate power demands and latency, particularly in edge-AI applications where resource constraints are prevalent \cite{kumar2024implementation}.
 
-    \item \textbf{ETISS (Extendable Translating Instruction Set Simulator):}
-    ETISS \cite{ETISS} is a prominent tool for instruction set simulation, enabling detailed modeling and evaluation of custom processor architectures.
-    It supports functional and performance simulations but is designed to work with CoreDSL-based instruction sets. Integrating custom instructions from other formats poses challenges.
+Salim et al. (2012) also provide valuable insights into the effectiveness of custom instruction sets in RISC processors. Their research illustrates how modifying instruction set architectures can enhance the flexibility and capabilities of embedded systems, reinforcing the necessity of addressing memory organization and physical address remapping to optimize performance \cite{salim2012customized}.
 
-    \item \textbf{OpenASIP 2.0:}
-    OpenASIP 2.0 \cite{OpenASIP} is a co-design toolset for customizing RISC-V processors, providing features for RTL generation and programming of custom instructions.
-    While effective for defining and validating custom instructions, it lacks direct support for integration with ETISS, which uses CoreDSL for instruction definitions.
-
-    \item \textbf{CoreDSL:}
-    CoreDSL \cite{CoreDSL} is a descriptive language for hardware design, including custom instructions.
-    It facilitates clear and flexible instruction set specification but requires additional steps for integration into simulation tools like ETISS.
-
-\end{enumerate}
-
-\section{Limitations of Existing Approaches}
-
-\begin{enumerate}
-
-    \item \textbf{Instruction Set Compatibility:}
-    There is a lack of compatibility between OpenASIP's custom instruction sets and the CoreDSL-based instruction sets used by ETISS.
-    The process of translating and integrating these custom instructions into ETISS is complex and requires manual effort.
-
-    \item \textbf{Integration Complexity:}
-    Existing tools do not provide a streamlined method for converting OpenASIP's custom instructions into CoreDSL format.
-    This complexity limits the effectiveness of integrating these instructions into ETISS.
-
-    \item \textbf{Tool Limitations:}
-    While ETISS and OpenASIP 2.0 offer powerful functionalities, their integration capabilities are limited.
-    ETISS does not support direct integration with custom instructions defined outside of CoreDSL, and OpenASIP 2.0 lacks built-in mechanisms for translating these instructions.
-
-\end{enumerate}
-
-\section{Gap in the State-of-the-Art}
-
-The primary gap in the current state-of-the-art is the lack of a streamlined, automated method for translating and integrating OpenASIP's custom instructions into ETISS,
-which uses CoreDSL-based instruction sets. Specifically:
-
-\begin{enumerate}
-
-    \item \textbf{Translation Methodology:}
-    There is no established methodology for efficiently converting OpenASIP's custom instructions into CoreDSL format.
-    This gap hinders the seamless integration of custom instructions across different formats.
-
-    \item \textbf{Automated Integration:}
-    Existing tools do not support automated integration of custom instruction sets across different formats.
-    This limitation increases manual effort and complexity, making it challenging to leverage OpenASIP's custom instructions within ETISS.
-
-\end{enumerate}
-
-\section{Proposed Approach and Its Contribution}
-
-Our proposed approach addresses these gaps by:
-
-\begin{enumerate}
-
-    \item \textbf{Developing a Translation Methodology:}
-    We propose a systematic methodology for translating OpenASIP's custom instruction sets into CoreDSL syntax, facilitating integration with ETISS.
-
-    \item \textbf{Enhancing Integration:}
-    By converting OpenASIP instructions into a CoreDSL-compatible format, we enable seamless integration with ETISS for effective simulation.
-
-    \item \textbf{Streamlining the Workflow:}
-    Our approach reduces manual effort and improves efficiency, making it easier to leverage OpenASIP's custom instructions within ETISS.
-
-\end{enumerate}
-
-In summary, our research provides a novel solution for bridging the gap between OpenASIP's custom instructions and ETISS's CoreDSL-based instruction sets,
-advancing the capabilities of simulation and customization tools.
+In light of these advancements, our study utilizes the OpenASIP 2.0 Co-Design toolchain to evaluate custom operations within the CoreDSL ecosystem. By translating OpenASIP custom operations into CoreDSL syntax and leveraging the Extendable Translating Instruction Set Simulator (ETISS), we benchmark the performance of these operations against MLonMCU benchmarks. The results indicate a promising moderate speedup, underscoring the potential of custom instruction sets to improve performance in modern embedded applications, akin to the benefits highlighted in the aforementioned research. This approach not only extends the current understanding of custom instruction integration but also provides a foundation for further exploration in the realm of performance optimization for specialized processors.

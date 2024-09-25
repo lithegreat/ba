@@ -1,6 +1,54 @@
-To evaluate the impact of the custom OpenASIP instructions on machine learning workloads, the following sections present both the methodology and the performance outcomes. These evaluations were performed using Seal5 to generate LLVM from CoreDSL, which was then executed on the ETISS platform through the MLonMCU framework.
+\section{Translated Instructions}
 
-\section{Setup}
+40 custom instructions were translated from OpenASIP to CoreDSL and integrated into the MLonMCU benchmarking framework. These custom instructions were then evaluated across various machine learning models to assess their impact on performance. The results of the benchmarking process are summarized in the table 5.1.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{name} & \textbf{description} \\ \hline
+    SHL1ADD & Array indexing for 16-bit data types \\ \hline
+    SHL2ADD & Array indexing for 32-bit data types \\ \hline
+    ADD & Integer addition.  \\ \hline
+    SUB & Integer subtraction.  \\ \hline
+    EQ & Equality comparison.  \\ \hline
+    GT & Greater-than signed integer comparison.  \\ \hline
+    GTU & Greater-than unsigned integer comparison.  \\ \hline
+    LT & Less-than signed integer comparison. \\ \hline
+    LTU & Less-than unsigned integer comparison. \\ \hline
+    NE & Not equal signed integer comparison. \\ \hline
+    GE & Greater or equal signed integer comparison. \\ \hline
+    GEU & Greater or equal unsigned integer comparison. \\ \hline
+    LE & Less or equal signed integer comparison. \\ \hline
+    LEU & Less or equal unsigned integer comparison. \\ \hline
+    SHL & Left logical shift. \\ \hline
+    SHR & Arithmetic shift right (sign bit duplicated). \\ \hline
+    SHRU & Logical shift right (most significant bits zeroed). \\ \hline
+    AND & Bitwise AND.  \\ \hline
+    IOR & Inclusive OR.  \\ \hline
+    XOR & Exclusive OR.  \\ \hline
+    MIN & Returns the smaller of the two signed integer values.  \\ \hline
+    MAX & Returns the larger of the two signed input values.  \\ \hline
+    MINU & Returns the smaller of the two unsigned input values. \\ \hline
+    MAXU & Returns the larger of the two unsigned input values. \\ \hline
+    MUL & 32-bit integer multiplication of the inputs 1 and 2 with lower result bits in the output 3. \\ \hline
+    MULHI & 32-bit integer multiplication of the signed inputs 1 and 2 with higher result bits in the output 3. \\ \hline
+    MULHIU & 32-bit integer multiplication of the unsigned inputs 1 and 2 with higher result bits in the output 3. \\ \hline
+    MULHISU & 32-bit integer multiplication of the signed input 1 and unsigned input 2 with higher result bits in the output 3. \\ \hline
+    DIV & Integer division. \\ \hline
+    DIVU & Unsigned integer division. \\ \hline
+    MAC & Multiply and accumulate (signed integer). \\ \hline
+    ROTL & Rotate left. \\ \hline
+    ROTR & Rotate right. \\ \hline
+    MOD & Integer modulo. \\ \hline
+    REM & Integer remainder. \\ \hline
+    MODU & Integer modulo (unsigned). \\ \hline
+    REMU & Integer remainder (unsigned). \\ \hline
+    ANDN & Does a bitwise negation (NOT) on the 2nd input followed by AND of the 1st input and the negated 2nd output. Special instruction in TI C64X. \\ \hline
+    SELECT & Select one of two values. \\ \hline
+    \end{tabularx}
+    \caption{Translated Instruction Set Table}
+\end{table}
 
 \section{Setup}
 
@@ -26,7 +74,7 @@ By evaluating these diverse models, the performance of the custom instructions w
 
 \section{Performance}
 
-The performance evaluation consists of several metrics, including the total number of instructions executed, ROM and RAM usage, and the number of clock cycles relative to the baseline configuration. The results from the benchmark runs are summarized in the tables below:
+The performance evaluation consists of several metrics, including the total number of instructions executed, ROM and RAM usage, and the number of clock cycles relative to the baseline configuration. The results from the benchmark runs are summarized in the table5.2 and the table below:
 
 
 \begin{sidewaystable}[h!]
@@ -108,6 +156,7 @@ The performance evaluation consists of several metrics, including the total numb
 
 \end{tabular}
 
+
 \section{Discussion}
 
 The performance results indicate that the custom instructions provided modest improvements in reducing the number of executed instructions and clock cycles. For instance, in the \texttt{cifar10} model, the use of custom operations such as \texttt{openasip\_base\_shl2add} and \texttt{openasip\_base\_mac} contributed to significant reductions in execution time by optimizing certain arithmetic operations.
@@ -115,5 +164,3 @@ The performance results indicate that the custom instructions provided modest im
 Across various models, the custom instructions were frequently executed, demonstrating their utility in different machine learning workloads. The LLVM backend generated by Seal5 was successfully integrated with MLonMCU, and the benchmarking process revealed that the custom instruction set can optimize specific computational tasks, particularly those involving shifts and multiplications.
 
 Although the performance gains observed were moderate, this evaluation demonstrates the potential for custom operations to optimize specific computational workloads. Further tests will be conducted using additional machine learning models, which are expected to highlight more substantial improvements in performance across a broader range of applications.
-
-Future work will continue to refine the instruction set, expanding the pool of custom operations, and testing more diverse workloads to better understand the full impact of custom instruction sets on performance in embedded systems.
