@@ -1,18 +1,25 @@
-RISC-V, an open-source instruction set architecture (ISA), has gained significant traction across various domains due to its modular design and open nature.
-Its applications are diverse, ranging from embedded systems powering sensors and microcontrollers to consumer electronics like smartphones and smartwatches.
-In automotive technology, RISC-V is increasingly integrated into advanced driver-assistance systems (ADAS) and infotainment units.
-Its flexibility also makes it a popular choice in academic research for processor design and computer architecture experimentation.
-This versatility and open-source model drive innovation and customization across numerous technological sectors. \cite{Risc-v}
+\section{Motivation}
+RISC-V, an open-source instruction set architecture (ISA), has gained significant traction across various domains due to its modular design and open nature. Its applications are diverse, ranging from embedded systems powering sensors and microcontrollers to consumer electronics like smartphones and smartwatches. In automotive technology, RISC-V is increasingly integrated into advanced driver-assistance systems (ADAS) and infotainment units. Additionally, RISC-V's flexibility and extensibility make it a popular choice in academic research for processor design and computer architecture experimentation. This versatility, combined with its open-source model, drives innovation and customization across numerous technological sectors \cite{Risc-v}.
 
-To fully leverage RISC-V's flexibility, effective simulation and validation of custom instructions are essential.
-The ETISS (Extendable Translating Instruction Set Simulator) \cite{ETISS} offers a robust platform for simulating and testing custom processor architectures.
-However, integrating ETISS with a tool that allows for flexible definition and specification of custom instructions can enhance its capabilities.
+To fully leverage RISC-V's flexibility, effective simulation and validation of custom instructions are essential. The ETISS (Extendable Translating Instruction Set Simulator) \cite{ETISS} provides a robust platform for simulating and testing custom processor architectures. However, ETISS lacks a native framework for the flexible definition and specification of custom instructions, which limits its ability to fully harness the potential of RISC-V's extensibility. OpenASIP 2.0 \cite{OpenASIP}, a co-design toolset that facilitates customization of RISC-V-based processors, fills this gap by supporting RTL generation and high-level programming of custom instructions. Integrating OpenASIP with ETISS would create a more powerful toolchain for prototyping, simulation, and validation of custom architectures.
 
-OpenASIP 2.0 \cite{OpenASIP} is a co-design toolset that facilitates the customization of RISC-V-based processors,
-supporting RTL generation and high-level programming of custom instructions.
-To improve the integration with ETISS, we translate OpenASIP's custom instruction sets into CoreDSL \cite{CoreDSL}—a descriptive language for hardware design.
-CoreDSL enables clear and flexible specification of custom instructions, which can then be seamlessly applied to ETISS for comprehensive simulation and evaluation.
+\section{Task Description}
+This thesis explores the integration of OpenASIP 2.0 with ETISS through the translation of custom instruction sets into CoreDSL. CoreDSL is a descriptive language for hardware design, enabling the specification of custom instructions in a clear and flexible manner \cite{CoreDSL}. The primary task of this research is to collect custom instructions from the OpenASIP toolset, translate them into CoreDSL syntax, and integrate them into ETISS for comprehensive simulation and evaluation. This translation aims to enhance the effectiveness of RISC-V-based processor customization, allowing for more efficient prototyping and testing of custom architectures within the ETISS environment.
 
-This paper focuses on this translation process, aiming to streamline the integration and evaluation of custom instructions.
-Our approach enhances the effectiveness and efficiency of the RISC-V simulation environment,
-driving more effective prototyping and validation of custom processor architectures.
+Our methodology includes collecting OpenASIP-defined custom operations, translating them into CoreDSL, and applying them within ETISS to simulate processor architectures that incorporate these custom instructions. The performance of these custom architectures is evaluated using MLonMCU, a benchmark tool specifically designed for machine learning workloads on microcontrollers. By measuring the performance gains provided by custom instructions, we can assess the potential benefits of extending RISC-V processors for specialized tasks.
+
+\section{Structure of the Thesis}
+This thesis is structured as follows:
+
+\begin{itemize}
+
+    \item \textbf{Chapter 2: State of the Art} - This chapter reviews the existing literature and state-of-the-art techniques related to RISC-V architecture, custom instruction sets. It discusses previous research in the field and positions this thesis within the broader context of RISC-V processor design.
+
+    \item \textbf{Chapter 3: Prerequisites} - This chapter provides the necessary background information and technical prerequisites for the research, including an overview of RISC-V, the CoreDSL language, and the MLonMCU benchmarking framework. The chapter aims to give readers a solid foundation for understanding the technical details of the implementation.
+
+    \item \textbf{Chapter 4: Implementation} - This chapter details the methodology and steps taken to integrate OpenASIP 2.0 with ETISS via CoreDSL. It describes the process of translating custom instructions from OpenASIP into CoreDSL syntax and the technical challenges encountered during this process. The integration and testing of custom architectures within the ETISS framework are also discussed.
+
+    \item \textbf{Chapter 5: Evaluation} - This chapter presents the results of the performance evaluation of the custom instructions. Using MLonMCU benchmarks, it analyzes the speedup achieved compared to a baseline RISC-V architecture. The chapter discusses the observed improvements and provides insights into the performance benefits of the custom instructions.
+
+    \item \textbf{Chapter 6: Conclusion} - The final chapter summarizes the contributions of the thesis, discusses the limitations of the current approach, and outlines potential directions for future research. It reflects on the impact of the custom instruction integration and the performance improvements demonstrated through simulation.
+\end{itemize}
