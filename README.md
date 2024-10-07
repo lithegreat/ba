@@ -12,7 +12,7 @@ CoreDSL ecosystem.
 - [X] 3. Collect list of all custom OpenASIP operations
 - [X] 4. Develop methodology for translating the custom OpenASIP operations to the CoreDSL syntax
 - [X] 5. Generate ETISS architectures using the new instructions
-- [ ] 6. Evaluate/Test/Benchmark the custom operations
+- [X] 6. Evaluate/Test/Benchmark the custom operations
 - [ ] 7. Optional: Allow ETISS to be used as OpenASIP2.0 target architecture.
 
 #### week 1-4:
