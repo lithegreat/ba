@@ -1,3 +1,31 @@
+\section{RISC-V ISA and Extensions}
+
+The RISC-V instruction set architecture (ISA) is an open and modular standard that provides a simplified, extensible foundation for a wide range of computing applications. Its modularity is one of its most significant features, allowing users to start with a small set of base instructions and then tailor the ISA with custom extensions, making it particularly suitable for specialized domains such as edge computing and artificial intelligence.
+
+At its core, the RISC-V base ISA includes only the essential integer arithmetic instructions, such as load/store, branch, and basic arithmetic operations. These instructions form the basis of the RV32I subset, which operates on 32-bit data and provides all the necessary functionalities to execute fundamental computing tasks. The RV32I set consists of 47 instructions encoded in a fixed 32-bit format, with fields specifying operation types, operand registers, and immediate values, as shown in Fig.~\ref{fig:riscvisa}. The opcode is a key part of this encoding, determining the nature of the operation, while other fields like funct3 and funct7 define more specific operations or variations of the base instruction.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/riscvisa.png}
+    \caption{RISC-V 32-bit instruction encoding format \cite{RISCVISA}}
+    \label{fig:riscvisa}
+\end{figure}
+
+The 32-bit encoding format allows for compact and efficient instruction decoding and execution, which is one of the key advantages of RISC-V in embedded systems and low-power applications. Each instruction is defined by specific bit fields: \cite{RISCVISA}
+\begin{itemize}
+    \item \textbf{Opcode}: Specifies the instruction type, such as arithmetic, memory access, or control flow.
+    \item \textbf{rd}: Destination register for the result.
+    \item \textbf{funct3}: Further categorizes the instruction within the opcode type.
+    \item \textbf{rs1} and \textbf{rs2}: Source registers.
+    \item \textbf{funct7}: Provides additional specificity for certain operations, such as shifts and bitwise operations.
+\end{itemize}
+
+RISC-V's open standard encourages customization, and one of its most powerful features is the ability to add custom instructions to enhance performance for domain-specific tasks. These custom instructions are often introduced as extensions to the RV32I base. A popular extension is the addition of SIMD (Single Instruction, Multiple Data) instructions, enabling parallel data processing.
+
+To implement custom operations as an extension to RV32I, one must define new opcodes or use available encoding spaces within the existing format. Custom instructions can be integrated into the existing pipeline, and tools like assembler and compiler must be modified to recognize these new instructions. In this thesis, custom instructions are designed to evaluate the benchmarks in MLonMCU framework. By targeting key operations in MLonMCU models, the custom instructions allow for more efficient processing of tasks, leading to significant improvements in performance.
+
+In summary, the RISC-V ISA provides a robust and flexible foundation with RV32I being its base subset. By utilizing its open and modular nature, this work extends the architecture with custom instructions tailored for MLonMCU model acceleration, showcasing the true potential of RISC-V for domain-specific optimization.
+
 \section{LLVM}
 
 LLVM (Low-Level Virtual Machine) is a versatile compiler infrastructure that supports the compilation of various programming languages to multiple target architectures. Its architecture consists of a collection of reusable compiler and toolchain technologies, providing a robust framework for both frontend and backend development.
@@ -6,7 +34,14 @@ At its core, LLVM employs an intermediate representation (IR) that serves as a c
 
 One of the key features of LLVM is its modularity, which allows developers to extend the compiler with new optimizations or target architectures without modifying existing components. This flexibility is particularly advantageous for research and development in custom instruction sets, facilitating rapid prototyping and experimentation.
 
-The compilation process in LLVM typically comprises several stages:
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/llvm.png}
+    \caption{LLVM compilation process. \cite{llvmfigure}}
+    \label{fig:llvm}
+\end{figure}
+
+The compilation process in LLVM (See Fig.~\ref{fig:llvm}) typically comprises several stages:
 
 \begin{enumerate}
     \item \textbf{Frontend:} This component parses the source code and converts it into LLVM IR. Frontends can be developed for various programming languages, allowing LLVM to serve as a backend for diverse ecosystems.
@@ -24,7 +59,14 @@ Overall, LLVM provides a powerful platform for compiling and optimizing code, ma
 \section{M2-ISA-R}
 M2-ISA-R is a framework designed to facilitate the description and implementation of custom ISAs. It uses a metamodel-based approach that allows for a high level of abstraction when specifying both functional and structural components of a processor architecture. This flexibility in modeling makes it particularly useful for hardware-software co-design.
 
-The workflow of M2-ISA-R involves parsing the ISA description via a frontend that utilizes the ANTLR4 framework. It then generates Python-based metamodel classes to capture both the architectural and behavioral aspects of the processor. The backend produces architecture-specific plugins for simulation tools, the most important of which is the ETISS architecture plugin. This enables rapid creation of CPU models for ETISS, closing the gap between high-level ISA descriptions and functional simulation.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/m2isar.png}
+    \caption{M2-ISA-R workflow \cite{RISCVSimulation}}
+    \label{fig:m2isar}
+\end{figure}
+
+The workflow (Fig.~\ref{fig:m2isar}) of M2-ISA-R involves parsing the ISA description via a frontend that utilizes the ANTLR4 framework. It then generates Python-based metamodel classes to capture both the architectural and behavioral aspects of the processor. The backend produces architecture-specific plugins for simulation tools, the most important of which is the ETISS architecture plugin. This enables rapid creation of CPU models for ETISS, closing the gap between high-level ISA descriptions and functional simulation.
 
 In this research, M2-ISA-R has been employed to automatically generate the ETISS CPU architecture plugin for a custom ISA, allowing the seamless integration of this architecture into the ETISS simulation framework. This significantly reduces the development time needed for functional verification and performance simulation of custom CPU designs \cite{RISCVSimulation}.
 

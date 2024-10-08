@@ -1,58 +1,125 @@
+This chapter will show implementation workflow for generating CoreDSL code from OSAL files. We first introduce the overview of the implementation workflow, then we will discuss details of each stage in the workflow. The final part of this chapter will discuss the testing with M2-ISA-R.
+
 \section{Implementation Workflow}
 
-The workflow for generating CoreDSL code from OSAL files, as depicted in Figure 4.1, involves several key stages that transform input operations into CoreDSL code suitable for integration into M2-ISA-R. The overall flow can be divided into the following steps:
-
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[width=\linewidth]{figures/flow.pdf}
   \caption{Implementation Flow}
+  \label{fig:flow}
 \end{figure}
 
-\section{XML Parser}
+The workflow for generating CoreDSL code from OSAL files, as depicted in Fig.~\ref{fig:flow}, involves several key stages that transform input operations into CoreDSL code suitable for integration into M2-ISA-R. The overall flow can be divided into the following steps:
 
-The process begins with the input OSAL (Operation Set Architecture Language) files, which contain the operation definitions. OpenASIP uses XML to define the properties and semantics of custom operations. To translate these operations into CoreDSL, we need to parse the XML representation and extract the necessary information. We developed an XML parser based on the \texttt{pandas} package in Python to read the XML files and extract the operation details.
+\subsection{OSAL Files}
+The process begins with the input OSAL (Operation Set Architecture Language) files, which contain the operation definitions. OpenASIP uses XML and C++ like language to define the properties, semantics and behaviors of custom operations. OSAL files are consisted of the .cc files and .opp files, which are in XML format. The .cc files contain the trigger code for the operations, while the .opp files contain the operation properties and semantics. The description of the properties, semantics and behaviors are in the \textit{OpenASIP User Manual} \cite{openasipmanual}. The following example shows the ADD operation defined in the OSAL files:
 
-The parser utilizes an object-oriented approach to ensure modularity and scalability. The extracted data is stored in the form of \texttt{pandas} DataFrames, which allows for efficient manipulation and filtering of the operations in the subsequent stages of processing. This structure provides flexibility for further operations, such as filtering based on input/output parameters or other properties, as required by the translation process.
-
-\section{Operation Filtering}
-
-The next stage involves filtering the operations based on predefined criteria. This step is crucial for identifying the operations that are suitable for further processing and transformation into CoreDSL code. The filtering process is designed to select operations that meet specific requirements, such as the number of inputs and outputs, the presence of side effects, or other characteristics that are relevant for the translation process.
-
-\section{CoreDSL Template Generation}
-
-The generation of the CoreDSL template involves several key steps. First, an empty CoreDSL template is created, which serves as the scaffold for defining the behavior of the custom operations. Then, the program iterates over the \textit{filtered operations} and fills in the necessary details into the template. The generation process leverages the parsed information from the XML files, including operation-specific attributes such as the number of input and output registers. The custom instructions are automatically encoded based on their properties, and the corresponding assembly code is generated.
-
-\begin{lstlisting}[caption={CoreDSL Template},captionpos=b]
-  InstructionSet OpenASIP_base extends RV32I {
-    functions{
-        // Inline functions for behavior
-    }
-    instructions {
-        // Example for custom instruction
-        OpenASIP_base_SHL1ADD {
-            encoding: // Encoding will be generated here
-            assembly: // Assembly code will be generated here
-            behavior: {
-                // Behavior code will be generated here
-            }
-        }
-        // Additional instructions will be iteratively generated
-    }
-  }
+\begin{lstlisting}[caption={.opp file Example \cite{openasipcode}},captionpos=b]
+// ADD operation properties and semantics in .opp file
+<operation>
+<name>ADD</name>
+<description>Integer addition. Output 3 is sum of inputs 1 and 2.</description>
+<inputs>2</inputs>
+<outputs>1</outputs>
+<in element-count="1" element-width="32" id="1" type="SIntWord">
+  <can-swap>
+    <in id="2"/>
+  </can-swap>
+</in>
+<in element-count="1" element-width="32" id="2" type="SIntWord">
+  <can-swap>
+    <in id="1"/>
+  </can-swap>
+</in>
+<out element-count="1" element-width="32" id="3" type="SIntWord"/>
+<trigger-semantics>
+  EXEC_OPERATION(add, IO(1), IO(2), IO(3));
+</trigger-semantics>
+</operation>
 \end{lstlisting}
 
-\subsection{Inline Function}
+\begin{lstlisting}[caption={.cc file Example \cite{openasipcode}},captionpos=b]
+// ADD operation trigger code in .cc file
+OPERATION(ADD)
+
+TRIGGER
+    IO(3) = UINT(1) + UINT(2);
+END_TRIGGER;
+
+END_OPERATION(ADD)
+\end{lstlisting}
+
+\subsection{XML Parser}
+
+To translate these operations defined in OSAL files in into CoreDSL, we need to parse the XML representation and extract the necessary information. We developed an XML parser based on the pandas package in Python to read the XML files and extract the operation details.
+
+The parser utilizes an object-oriented approach to ensure modularity and scalability. The extracted data is stored in the form of pandas DataFrames, which allows for efficient manipulation and filtering of the operations in the subsequent stages of processing. This structure provides flexibility for further
+
+\subsection{Operation Filtering}
+
+The next stage involves filtering the operations based on predefined criteria. This step is crucial for identifying the operations that are suitable for further processing and transformation into CoreDSL code. The filtering process is designed to select operations that meet specific requirements, such as the number of inputs and outputs, the presence of side effects, or other characteristics that are relevant for the translation process. The filtering criteria are defined based on the properties and semantics of the operations as specified in the XML files. Table~\ref{tab:filtercriteria} shows the filtering criteria used in the implementation.
+
+% Filter Criteria
+\begin{table}[hb]
+    \centering
+    \caption{Operation Filtering Criteria}
+    \label{tab:filtercriteria}
+    \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{Properties} & \textbf{Criteria} \\ \midrule
+    Minimum Inputs & 0 \\
+    Maximum Inputs & 3 \\
+    Minimum Outputs & 0 \\
+    Maximum Outputs & 1 \\
+    Element Widths & [1, 5, 8, 16, 32] \\
+    No Control Flow & False \\
+    No Call & False \\
+    No Branch & False \\
+    Element Count 1 & False \\
+    No Side Effects & False \\
+    No Memory Reads & False \\
+    No Memory Writes & False \\
+    No HalfFloatWord & False \\
+    No FloatWord & False \\
+    No RawData & False \\ \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{CoreDSL Template Generation}
+
+The generation of the CoreDSL template involves several key steps. First, an empty CoreDSL template is created, which serves as the scaffold for defining the behavior of the custom operations. Then, the program iterates over the filtered operations and fills in the necessary details into the template. The generation process leverages the parsed information from the XML files, including operation-specific attributes such as the number of input and output registers. The custom instructions are automatically encoded based on their properties, and the corresponding assembly code is generated.
+
+\begin{lstlisting}[caption={CoreDSL Template},captionpos=b]
+InstructionSet OpenASIP_base extends RV32I {
+  functions{
+      // Inline functions for behavior
+  }
+  instructions {
+      // Example for custom instruction
+      OpenASIP_{filename}_{operation_name} {
+          encoding: // Encoding will be generated here
+          assembly: // Assembly code will be generated here
+          behavior: {
+              // Behavior code will be generated here
+          }
+      }
+      // Additional instructions will be iteratively generated
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Inline Function}
 
 The inline functions required for custom operations are defined as part of the \textit{trigger codes} within the OpenASIP framework. Although OpenASIP provides the trigger code definition, it does not include the actual implementation of these inline functions. Fortunately, these functions are relatively simple to implement and are inserted at the beginning of the CoreDSL file. This ensures that all behavior code for custom instructions can utilize these functions during execution. The following example demonstrates how inline functions are defined in the CoreDSL template:
 
 \begin{lstlisting}
-    // Returns the minimum of two signed integers.
-    signed<32> min(signed<32> a, signed<32> b) [[inline]] {
-        return (a < b) ? a : b;
-    }
+// Returns the minimum of two signed integers.
+signed<32> min(signed<32> a, signed<32> b) [[inline]] {
+    return (a < b) ? a : b;
+}
 \end{lstlisting}
 
-\subsection{Auto Encoding and Assembly}
+\subsubsection{Auto Encoding and Assembly}
 
 The encoding process for custom instructions is handled automatically by the program. As the filtered operations are processed sequentially, each instruction is assigned an encoding that follows the RISC-V extension format. For example, instructions with two input registers (\texttt{rs1} and \texttt{rs2}) and one output register (\texttt{rd}) will be encoded in a standard 32-bit RISC-V format R-type instruction. Here is an example of how the encoding is generated:
 
@@ -68,25 +135,25 @@ For assembly code generation, the program analyzes the XML-defined instruction a
 
 This ensures that all operations are properly defined within the CoreDSL framework, both at the encoding level and in terms of their assembly representation.
 
-\section{Behavior Code Generation}
+\subsection{Behavior Code Generation}
 
 The generation of behavior code for custom operations is a crucial step in translating operation semantics into executable instructions within the CoreDSL framework. This process primarily revolves around interpreting the trigger semantics provided for each operation and converting them into behavior code that can be executed by the target architecture.
 
 % How to classify operations as single_exec_operation
 % non_single_exec_operation
 \begin{lstlisting}[caption={Non-Single Exec Operation Semantics Example},captionpos=b]
-    SimValue shifted;
-    EXEC_OPERATION(shl, IO(1), 1, shifted);
-    EXEC_OPERATION(add, shifted, IO(2), IO(3));
+SimValue shifted;
+EXEC_OPERATION(shl, IO(1), 1, shifted);
+EXEC_OPERATION(add, shifted, IO(2), IO(3));
 \end{lstlisting}
 % single_exec_operation
 \begin{lstlisting}[caption={Single Exec Operation Semantics Example},captionpos=b]
-    EXEC_OPERATION(add, IO(1), IO(2), IO(3));
+EXEC_OPERATION(add, IO(1), IO(2), IO(3));
 \end{lstlisting}
 
 The behavior code generation process in this framework involves two main types of operations: \texttt{single\_exec\_operation} and non-\texttt{single\_exec\_operation} operations. The approach to generating behavior code differs depending on the type of operation, and the handling of each is described below.
 
-\subsection{Handling \texttt{single\_exec\_operation}}
+\subsubsection{Handling \texttt{single\_exec\_operation}}
 
 For operations classified as \texttt{single\_exec\_operation}, which involve exactly zero or one \texttt{EXEC\_OPERATION}, the process is relatively straightforward. The trigger code for these operations is directly searched within the parsed XML file, and once found, it is transformed into behavior code for the CoreDSL template.
 
@@ -97,12 +164,12 @@ For operations classified as \texttt{single\_exec\_operation}, which involve exa
 
     \item \textbf{Example}:
     \begin{lstlisting}
-        // Translated behavior code for a single_exec_operation
-        X[rd % RFS] = X[rs1 % RFS] + X[rs2 % RFS]; // Simple addition
+    // Translated behavior code for a single_exec_operation
+    X[rd % RFS] = X[rs1 % RFS] + X[rs2 % RFS]; // Simple addition
     \end{lstlisting}
 \end{enumerate}
 
-\subsection{Handling Non-\texttt{single\_exec\_operation} Instructions}
+\subsubsection{Handling Non-\texttt{single\_exec\_operation} Instructions}
 
 For operations that are not classified as \texttt{single\_exec\_operation}, OpenASIP does not provide a direct trigger code. Instead, the process requires extracting relevant properties from the XML representation and using those properties to identify the appropriate base operations (\texttt{based operations}). The steps for handling these more complex operations are as follows:
 
@@ -115,15 +182,15 @@ For operations that are not classified as \texttt{single\_exec\_operation}, Open
 
     \item \textbf{Example}:
     \begin{lstlisting}
-        // Combined behavior code from multiple based operations
-        signed<32> shifted = X[rs1 % RFS] << 1;  // First base operation: shift left
-        X[rd % RFS] = shifted + X[rs2 % RFS];    // Second base operation: addition
+    // Combined behavior code from multiple based operations
+    signed<32> shifted = X[rs1 % RFS] << 1;  // First base operation: shift left
+    X[rd % RFS] = shifted + X[rs2 % RFS];    // Second base operation: addition
     \end{lstlisting}
 
     \item \textbf{Modifying Variable Names}: Based on the extracted input-output properties, the system adjusts the variable names in the behavior code to align with the correct registers. For example, if the XML specifies different register mappings or custom variables, the tool replaces them with the standard \texttt{X[rs1]}, \texttt{X[rs2]}, and \texttt{X[rd]} syntax used in CoreDSL.
 \end{enumerate}
 
-\subsection{Handling Different Variable Names}
+\subsubsection{Handling Different Variable Names}
 
 In some cases, variable names in the trigger code might differ from the expected format used in the CoreDSL framework. This is a common issue, especially when operations are defined in different contexts or environments. The tool handles this issue by:
 
@@ -134,17 +201,13 @@ In some cases, variable names in the trigger code might differ from the expected
 
     \item \textbf{Example}:
     \begin{lstlisting}
-        // Before transformation: uses custom variable names
-        IO(3) = UINT(1) + UINT(2);
 
-        // After transformation: standard variable names
-        X[rd % RFS] = X[rs1 % RFS] + X[rs2 % RFS];
     \end{lstlisting}
 \end{enumerate}
 
 This automatic renaming ensures that all behavior code conforms to the same format, regardless of the original trigger code's naming conventions.
 
-\subsection{Handling Other Corner Cases}
+\subsubsection{Handling Other Corner Cases}
 
 In addition to the common cases mentioned above, the tool also addresses several corner cases that may arise during behavior code generation:
 
@@ -156,7 +219,7 @@ In addition to the common cases mentioned above, the tool also addresses several
     \item \textbf{Error Handling}: In situations where runtime errors are defined (e.g., division by zero), the tool ensures that appropriate error handling mechanisms are inserted into the behavior code. This includes raising errors or returning safe default values when an error condition is detected.
 \end{enumerate}
 
-\subsection{Final Behavior Code Generation}
+\subsubsection{Final Behavior Code Generation}
 
 The final behavior code is generated by combining the transformed trigger code for \texttt{single\_exec\_operation} or the combined base operations for non-\texttt{single\_exec\_operation} instructions. This ensures that each operation is fully defined within the CoreDSL framework and can be executed correctly on the target architecture.
 
@@ -180,7 +243,7 @@ X[rd % RFS] = (signed<32>)(int3);
 
 By handling both simple and complex cases, this approach ensures that the generated behavior code is both comprehensive and tailored to the specific needs of each instruction.
 
-\section{Code Generation}
+\subsection{Code Generation}
 
 The final stage of the implementation workflow involves generating the complete CoreDSL code for the custom instruction set. This process combines the CoreDSL template with the behavior code for each custom operation, resulting in a fully defined instruction set that can be integrated into the M2-ISA-R architecture.
 
