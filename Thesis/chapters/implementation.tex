@@ -121,16 +121,16 @@ signed<32> min(signed<32> a, signed<32> b) [[inline]] {
 
 \subsubsection{Auto Encoding and Assembly}
 
-The encoding process for custom instructions is handled automatically by the program. As the filtered operations are processed sequentially, each instruction is assigned an encoding that follows the RISC-V extension format. For example, instructions with two input registers (\texttt{rs1} and \texttt{rs2}) and one output register (\texttt{rd}) will be encoded in a standard 32-bit RISC-V format R-type instruction. Here is an example of how the encoding is generated:
+The encoding process for custom instructions is handled automatically by the program. As the filtered operations are processed sequentially, each instruction is assigned an encoding that follows the RISC-V extension format. For example, instructions with two input registers (\textbf{rs1} and \textbf{rs2}) and one output register (\textbf{rd}) will be encoded in a standard 32-bit RISC-V format R-type instruction. Here is an example of how the encoding is generated:
 
 \begin{lstlisting}
-  encoding: 7'b0000000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
+encoding: 7'b0000000 :: rs2[4:0] :: rs1[4:0] :: 3'b000 :: rd[4:0] :: 7'b0001011;
 \end{lstlisting}
 
 For assembly code generation, the program analyzes the XML-defined instruction attributes, such as the number of source and destination registers. Based on these attributes, it generates the corresponding assembly format string, ensuring that the generated assembly matches the intended behavior of each instruction. The following example shows how the registers are referenced in the assembly code:
 
 \begin{lstlisting}
-  assembly: "{name(rd)}, {name(rs1)}, {name(rs2)}";
+assembly: "{name(rd)}, {name(rs1)}, {name(rs2)}";
 \end{lstlisting}
 
 This ensures that all operations are properly defined within the CoreDSL framework, both at the encoding level and in terms of their assembly representation.
@@ -151,43 +151,43 @@ EXEC_OPERATION(add, shifted, IO(2), IO(3));
 EXEC_OPERATION(add, IO(1), IO(2), IO(3));
 \end{lstlisting}
 
-The behavior code generation process in this framework involves two main types of operations: \texttt{single\_exec\_operation} and non-\texttt{single\_exec\_operation} operations. The approach to generating behavior code differs depending on the type of operation, and the handling of each is described below.
+The behavior code generation process in this framework involves two main types of operations: \textbf{single\_exec\_operation} and \textbf{non\_single\_exec\_operation} operations. The approach to generating behavior code differs depending on the type of operation, and the handling of each is described below.
 
-\subsubsection{Handling \texttt{single\_exec\_operation}}
+\subsubsection{Handling \textbf{single\_exec\_operation}}
 
-For operations classified as \texttt{single\_exec\_operation}, which involve exactly zero or one \texttt{EXEC\_OPERATION}, the process is relatively straightforward. The trigger code for these operations is directly searched within the parsed XML file, and once found, it is transformed into behavior code for the CoreDSL template.
+For operations classified as single, which involve exactly zero or one \textbf{EXEC\_OPERATION}, the process is relatively straightforward. The trigger code for these operations is directly searched within the parsed XML file, and once found, it is transformed into behavior code for the CoreDSL template.
 
 \begin{enumerate}
     \item \textbf{Search for Trigger Code}: The system directly locates the corresponding trigger code for the operation. If the trigger code is found, it is translated and formatted according to the CoreDSL behavior syntax.
 
-    \item \textbf{Behavior Code Translation}: The translation process involves adjusting the variable names and formatting to conform to the CoreDSL standard. For instance, custom register names are transformed into the CoreDSL format using \texttt{X[rs1]}, \texttt{X[rs2]}, and \texttt{X[rd]}.
+    \item \textbf{Behavior Code Translation}: The translation process involves adjusting the variable names and formatting to conform to the CoreDSL standard. For instance, custom register names are transformed into the CoreDSL format using \textbf{X[rs1]}, \textbf{X[rs2]}, and \textbf{X[rd]}.
 
     \item \textbf{Example}:
     \begin{lstlisting}
-    // Translated behavior code for a single_exec_operation
-    X[rd % RFS] = X[rs1 % RFS] + X[rs2 % RFS]; // Simple addition
+// Translated behavior code for a single_exec_operation
+X[rd % RFS] = X[rs1 % RFS] + X[rs2 % RFS]; // Simple addition
     \end{lstlisting}
 \end{enumerate}
 
-\subsubsection{Handling Non-\texttt{single\_exec\_operation} Instructions}
+\subsubsection{Handling \textbf{Non-single\_exec\_operation} Instructions}
 
-For operations that are not classified as \texttt{single\_exec\_operation}, OpenASIP does not provide a direct trigger code. Instead, the process requires extracting relevant properties from the XML representation and using those properties to identify the appropriate base operations (\texttt{based operations}). The steps for handling these more complex operations are as follows:
+For operations that are not classified as \textbf{single\_exec\_operation}, OpenASIP does not provide a direct trigger code. Instead, the process requires extracting relevant properties from the XML representation and using those properties to identify the appropriate base operations (\textbf{based operations}). The steps for handling these more complex operations are as follows:
 
 \begin{enumerate}
-    \item \textbf{Extract Properties from XML}: The first step is to parse the XML file and extract key properties such as the number of inputs (\texttt{rs}) and outputs (\texttt{rd}), as well as other operation-specific semantics that define the behavior of the instruction.
+    \item \textbf{Extract Properties from XML}: The first step is to parse the XML file and extract key properties such as the number of inputs (\textbf{rs}) and outputs (\textbf{rd}), as well as other operation-specific semantics that define the behavior of the instruction.
 
-    \item \textbf{Identify Based Operations}: Once the necessary properties are extracted, the system searches for related base operations (\texttt{EXEC\_OPERATION}) that can be combined to define the full behavior of the instruction. These base operations may consist of multiple execution steps, each of which contributes to the final instruction's functionality.
+    \item \textbf{Identify Based Operations}: Once the necessary properties are extracted, the system searches for related base operations (\textbf{EXEC\_OPERATION}) that can be combined to define the full behavior of the instruction. These base operations may consist of multiple execution steps, each of which contributes to the final instruction's functionality.
 
     \item \textbf{Combining Based Operations}: If multiple base operations are found, they are combined sequentially in the generated behavior code. Each base operation's trigger code is retrieved, transformed, and concatenated to form the full behavior.
 
     \item \textbf{Example}:
     \begin{lstlisting}
-    // Combined behavior code from multiple based operations
-    signed<32> shifted = X[rs1 % RFS] << 1;  // First base operation: shift left
-    X[rd % RFS] = shifted + X[rs2 % RFS];    // Second base operation: addition
+// Combined behavior code from multiple based operations
+signed<32> shifted = X[rs1 % RFS] << 1;  // First base operation: shift left
+X[rd % RFS] = shifted + X[rs2 % RFS];    // Second base operation: addition
     \end{lstlisting}
 
-    \item \textbf{Modifying Variable Names}: Based on the extracted input-output properties, the system adjusts the variable names in the behavior code to align with the correct registers. For example, if the XML specifies different register mappings or custom variables, the tool replaces them with the standard \texttt{X[rs1]}, \texttt{X[rs2]}, and \texttt{X[rd]} syntax used in CoreDSL.
+    \item \textbf{Modifying Variable Names}: Based on the extracted input-output properties, the system adjusts the variable names in the behavior code to align with the correct registers. The next section will discuss how variable names are handled in more detail.
 \end{enumerate}
 
 \subsubsection{Handling Different Variable Names}
@@ -195,13 +195,21 @@ For operations that are not classified as \texttt{single\_exec\_operation}, Open
 In some cases, variable names in the trigger code might differ from the expected format used in the CoreDSL framework. This is a common issue, especially when operations are defined in different contexts or environments. The tool handles this issue by:
 
 \begin{enumerate}
-    \item \textbf{Pattern Matching and Variable Mapping}: The tool applies pattern matching to identify variables in the trigger code (e.g., \texttt{rs1}, \texttt{rs2}, \texttt{rd}) and maps them to the expected format used in the target architecture. This ensures consistency in variable naming across all operations.
+    \item \textbf{Pattern Matching and Variable Mapping}: The tool applies pattern matching to identify variables in the trigger code (e.g., \textbf{UINT(1)}, \textbf{SIntWord}, \textbf{IO(3)}) and maps them to the expected format used in the target architecture. This ensures consistency in variable naming across all operations.
 
-    \item \textbf{Renaming Strategy}: If the trigger code uses custom variable names (e.g., \texttt{temp\_reg}), the tool automatically replaces these with the standard naming convention used in CoreDSL . This is done using regular expressions to match and substitute variable names accordingly.
+    \item \textbf{Renaming Strategy}: If the trigger code uses custom variable names (e.g., \textbf{temp\_reg}), the tool automatically replaces these with the standard naming convention used in CoreDSL . This is done using regular expressions to match and substitute variable names accordingly.
 
     \item \textbf{Example}:
     \begin{lstlisting}
+// Before transformation: uses custom variable names
+SIntWord in1 = static_cast<SIntWord>(UINT(1));
+SIntWord in2 = static_cast<SIntWord>(UINT(2));
+IO(3) = (in1 > in2) ? 1 : 0;
 
+// After transformation: standard variable names
+signed<32> in1 = (signed<32>)(X[rs1 % RFS]);
+signed<32> in2 = (signed<32>)(X[rs2 % RFS]);
+X[rd % RFS] = (in1 > in2) ? 1 : 0;
     \end{lstlisting}
 \end{enumerate}
 
@@ -212,7 +220,7 @@ This automatic renaming ensures that all behavior code conforms to the same form
 In addition to the common cases mentioned above, the tool also addresses several corner cases that may arise during behavior code generation:
 
 \begin{enumerate}
-    \item \textbf{Multiple \texttt{EXEC\_OPERATION} Cases}: If an operation involves multiple \texttt{EXEC\_OPERATION} statements, the tool concatenates the behavior of these operations, ensuring that all steps are executed in the correct order. For example, if an operation involves both a shift and an addition, the tool ensures that both operations are included in the final behavior code.
+    \item \textbf{Multiple \textbf{EXEC\_OPERATION} Cases}: In this case, the tool concatenates the behavior of these operations, ensuring that all steps are executed in the correct order. For example, if an operation involves both a shift and an addition, the tool ensures that both operations are included in the final behavior code.
 
     \item \textbf{Complex Trigger Semantics}: For operations with complex trigger semantics (e.g., involving multiple registers or advanced arithmetic operations), the tool decomposes the trigger code into manageable steps and generates the corresponding behavior code. This may involve splitting a single line of code into multiple steps to ensure clarity and correctness.
 
@@ -221,7 +229,7 @@ In addition to the common cases mentioned above, the tool also addresses several
 
 \subsubsection{Final Behavior Code Generation}
 
-The final behavior code is generated by combining the transformed trigger code for \texttt{single\_exec\_operation} or the combined base operations for non-\texttt{single\_exec\_operation} instructions. This ensures that each operation is fully defined within the CoreDSL framework and can be executed correctly on the target architecture.
+The final behavior code is generated by combining the transformed trigger code for \textbf{single\_exec\_operation} or the combined base operations for \textbf{non\_single\_exec\_operation} instructions. This ensures that each operation is fully defined within the CoreDSL framework and can be executed correctly on the target architecture.
 
 The behavior code is then inserted into the CoreDSL template, completing the generation process for each custom instruction.
 

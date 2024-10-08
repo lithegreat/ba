@@ -4,27 +4,52 @@ The RISC-V instruction set architecture (ISA) is an open and modular standard th
 
 At its core, the RISC-V base ISA includes only the essential integer arithmetic instructions, such as load/store, branch, and basic arithmetic operations. These instructions form the basis of the RV32I subset, which operates on 32-bit data and provides all the necessary functionalities to execute fundamental computing tasks. The RV32I set consists of 47 instructions encoded in a fixed 32-bit format, with fields specifying operation types, operand registers, and immediate values, as shown in Fig.~\ref{fig:riscvisa}. The opcode is a key part of this encoding, determining the nature of the operation, while other fields like funct3 and funct7 define more specific operations or variations of the base instruction.
 
-\begin{figure}
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/riscvisa.png}
     \caption{RISC-V 32-bit instruction encoding format \cite{RISCVISA}}
     \label{fig:riscvisa}
 \end{figure}
 
-The 32-bit encoding format allows for compact and efficient instruction decoding and execution, which is one of the key advantages of RISC-V in embedded systems and low-power applications. Each instruction is defined by specific bit fields: \cite{RISCVISA}
-\begin{itemize}
-    \item \textbf{Opcode}: Specifies the instruction type, such as arithmetic, memory access, or control flow.
-    \item \textbf{rd}: Destination register for the result.
-    \item \textbf{funct3}: Further categorizes the instruction within the opcode type.
-    \item \textbf{rs1} and \textbf{rs2}: Source registers.
-    \item \textbf{funct7}: Provides additional specificity for certain operations, such as shifts and bitwise operations.
-\end{itemize}
+The 32-bit encoding format allows for compact and efficient instruction decoding and execution, which is one of the key advantages of RISC-V in embedded systems and low-power applications. Each instruction is defined by specific bit fields (Table~\ref{tab:riscvfields}) \cite{RISCVISA}
 
-RISC-V's open standard encourages customization, and one of its most powerful features is the ability to add custom instructions to enhance performance for domain-specific tasks. These custom instructions are often introduced as extensions to the RV32I base. A popular extension is the addition of SIMD (Single Instruction, Multiple Data) instructions, enabling parallel data processing.
+\begin{table}[!h]
+    \footnotesize
+    \centering
+    \begin{tabular}{|c|l|}
+        \hline
+        \textbf{Field} & \textbf{Description} \\
+        \hline
+        Opcode & Specifies the instruction type, such as arithmetic, memory access, or control flow. \\
+        \hline
+        rd & Destination register for the result. \\
+        \hline
+        funct3 & Further categorizes the instruction within the opcode type. \\
+        \hline
+        rs1 and rs2 & Source registers. \\
+        \hline
+        funct7 & Provides additional specificity for certain operations, such as shifts and bitwise operations. \\
+        \hline
+        imm & Immediate value for the instruction. \\
+        \hline
+    \end{tabular}
+    \caption{RISC-V instruction fields}
+    \label{tab:riscvfields}
 
-To implement custom operations as an extension to RV32I, one must define new opcodes or use available encoding spaces within the existing format. Custom instructions can be integrated into the existing pipeline, and tools like assembler and compiler must be modified to recognize these new instructions. In this thesis, custom instructions are designed to evaluate the benchmarks in MLonMCU framework. By targeting key operations in MLonMCU models, the custom instructions allow for more efficient processing of tasks, leading to significant improvements in performance.
+\end{table}
 
-In summary, the RISC-V ISA provides a robust and flexible foundation with RV32I being its base subset. By utilizing its open and modular nature, this work extends the architecture with custom instructions tailored for MLonMCU model acceleration, showcasing the true potential of RISC-V for domain-specific optimization.
+As demonstrated in Table~\ref{fig:opcodemap}, the opcode map for RV32G and RV64G allocates specific major opcodes for standard and custom instruction sets. Custom instructions, denoted by \textbf{custom-0}, \textbf{custom-1}, and others, are reserved for extensions within the 32-bit instruction format. For example, the major opcodes marked as \textbf{custom-2} and \textbf{custom-3} are reserved for future use in RV128, ensuring extensibility for broader data paths.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/opcodemap.png}
+    \caption{RISC-V opcode map \cite{RISCVISA}}
+    \label{fig:opcodemap}
+\end{figure}
+
+RISC-V's open standard encourages customization, allowing for the addition of custom instructions to enhance performance in domain-specific tasks. These custom instructions are often introduced as extensions to the RV32I base, with additional opcode spaces reserved.
+
+In this thesis, custom instructions are designed to accelerate model evaluation in the MLonMCU framework. By targeting key operations in machine learning models, the custom instructions improve the efficiency of critical tasks, leading to substantial performance gains on constrained devices. The flexibility of RISC-V's ISA and its support for custom extensions make it an ideal platform for exploring novel instruction sets tailored to specific applications.
 
 \section{LLVM}
 
