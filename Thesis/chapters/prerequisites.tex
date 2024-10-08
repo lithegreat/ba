@@ -97,9 +97,16 @@ In this research, M2-ISA-R has been employed to automatically generate the ETISS
 
 \section{Seal5}
 
-This work builds upon the Seal5 framework, which provides a semi-automated flow for generating LLVM compiler support for custom RISC-V instruction set architectures (ISAs). Seal5 leverages a C-style ISA description language to facilitate the integration of vendor-defined instructions, allowing for efficient exploration and implementation of custom instructions tailored to specific applications.
+This work builds upon the Seal5 framework (Fig.~\ref{fig:seal5}), which provides a semi-automated flow for generating LLVM compiler support for custom RISC-V instruction set architectures (ISAs). Seal5 leverages a C-style ISA description language to facilitate the integration of vendor-defined instructions, allowing for efficient exploration and implementation of custom instructions tailored to specific applications.
 
-Seal5 enables the automatic generation of LLVM patches that cover a wide range of functionalities, from baseline assembly-level support to sophisticated compiler code generation patterns for scalar and vector instructions. The tool features a novel pattern generator approach focused on optimizing code generation for SIMD (Single Instruction, Multiple Data) instructions, including autovectorization capabilities.
+Seal5 enables the automatic generation of LLVM patches that cover a wide range of functionalities, from baseline assembly-level support to sophisticated compiler code generation patterns for scalar and vector instructions . The tool features a novel pattern generator approach focused on optimizing code generation for SIMD (Single Instruction, Multiple Data) instructions, including autovectorization capabilities.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/seal5.png}
+    \caption{Seal5 workflow \cite{Seal5}}
+    \label{fig:seal5}
+\end{figure}
 
 By utilizing Seal5, this research aims to convert a custom instruction set into a customized LLVM backend. This process significantly reduces development time and effort while achieving performance levels comparable to or exceeding those of manually implemented LLVM toolchains. The ability of Seal5 to support autovectorization enhances the execution efficiency of workloads, making it an invaluable asset for the exploration of custom ISA extensions \cite{Seal5}.
 
@@ -108,6 +115,13 @@ MLonMCU is a benchmarking tool designed specifically for TinyML applications, en
 
 Key design principles of MLonMCU include isolation, reproducibility, parallelism, and extensibility. The tool isolates dependencies across different environments, ensuring that benchmarking sessions are not affected by other processes running on the system. It allows users to access all intermediate artifacts generated during a benchmarking session, ensuring full reproducibility of results. Furthermore, MLonMCU makes use of all available computational resources to run benchmarks in parallel, significantly speeding up the evaluation process. It also provides an extensible API, allowing users to integrate custom components and features easily.
 
-MLonMCU's workflow consists of several stages, including model loading, compilation, and execution on target devices or simulators. It also supports post-processing stages for result analysis, where it generates detailed reports on metrics such as execution latency, instructions per cycle, runtime, and memory usage. The platform-agnostic design of MLonMCU ensures that it can handle a wide variety of devices out of the box, making it an ideal tool for early-stage design evaluations and virtual prototyping.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{figures/MLonMCUStructureNew.pdf}
+    \caption{MLonMCU workflow \cite{MLonMCU}}
+    \label{fig:mlonmcu}
+\end{figure}
+
+MLonMCU's workflow (Fig.~\ref{fig:mlonmcu}) consists of several stages, including model loading, compilation, and execution on target devices or simulators. It also supports post-processing stages for result analysis, where it generates detailed reports on metrics such as execution latency, instructions per cycle, runtime, and memory usage. The platform-agnostic design of MLonMCU ensures that it can handle a wide variety of devices out of the box, making it an ideal tool for early-stage design evaluations and virtual prototyping.
 
 In this research, MLonMCU is used to evaluate the performance of translated instruction sets across different machine learning models. The benchmarking results provide crucial insights into how well the custom instruction sets perform in terms of execution efficiency and resource usage across various target platforms \cite{MLonMCU}.
