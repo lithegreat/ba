@@ -3,10 +3,10 @@ This chapter will show implementation workflow for generating CoreDSL code from 
 \section{Implementation Workflow}
 
 \begin{figure}[ht]
-  \centering
-  \includegraphics[width=\linewidth]{figures/flow.pdf}
-  \caption{Implementation Flow}
-  \label{fig:flow}
+\centering
+\includegraphics[width=\linewidth]{figures/flow.pdf}
+\caption{Implementation Flow}
+\label{fig:flow}
 \end{figure}
 
 The workflow for generating CoreDSL code from OSAL files, as depicted in Fig.~\ref{fig:flow}, involves several key stages that transform input operations into CoreDSL code suitable for integration into M2-ISA-R. The overall flow can be divided into the following steps:
@@ -14,7 +14,7 @@ The workflow for generating CoreDSL code from OSAL files, as depicted in Fig.~\r
 \subsection{OSAL Files}
 The process begins with the input OSAL (Operation Set Architecture Language) files, which contain the operation definitions. OpenASIP uses XML and C++ like language to define the properties, semantics and behaviors of custom operations. OSAL files are consisted of the .cc files and .opp files, which are in XML format. The .cc files contain the trigger code for the operations, while the .opp files contain the operation properties and semantics. The description of the properties, semantics and behaviors are in the \textit{OpenASIP User Manual} \cite{openasipmanual}. The following example shows the ADD operation defined in the OSAL files:
 
-\begin{lstlisting}[caption={.opp file Example \cite{openasipcode}},captionpos=b]
+\begin{lstlisting}[caption={.opp file Example \cite{openasipcode}},captionpos=b,language=XML]
 // ADD operation properties and semantics in .opp file
 <operation>
 <name>ADD</name>
@@ -89,23 +89,23 @@ The next stage involves filtering the operations based on predefined criteria. T
 
 The generation of the CoreDSL template involves several key steps. First, an empty CoreDSL template is created, which serves as the scaffold for defining the behavior of the custom operations. Then, the program iterates over the filtered operations and fills in the necessary details into the template. The generation process leverages the parsed information from the XML files, including operation-specific attributes such as the number of input and output registers. The custom instructions are automatically encoded based on their properties, and the corresponding assembly code is generated.
 
-\begin{lstlisting}[caption={CoreDSL Template},captionpos=b]
+\begin{lstlisting}[caption={CoreDSL Template},captionpos=b,language=C]
 InstructionSet OpenASIP_base extends RV32I {
-  functions{
-      // Inline functions for behavior
-  }
-  instructions {
-      // Example for custom instruction
-      OpenASIP_{filename}_{operation_name} {
-          encoding: // Encoding will be generated here
-          assembly: // Assembly code will be generated here
-          behavior: {
-              // Behavior code will be generated here
-          }
-      }
-      // Additional instructions will be iteratively generated
-  }
-}
+    functions{
+        // Inline functions for behavior
+    }
+    instructions {
+        // Example for custom instruction
+        OpenASIP_{filename}_{operation_name} {
+            encoding: // Encoding will be generated here
+            assembly: // Assembly code will be generated here
+            behavior: {
+                // Behavior code will be generated here
+            }
+        }
+        // Additional instructions will be iteratively generated
+    }
+}   
 \end{lstlisting}
 
 \subsubsection{Inline Function}
