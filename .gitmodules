@@ -4,3 +4,6 @@
 [submodule "mlonmcu"]
 	path = mlonmcu
 	url = https://github.com/tum-ei-eda/mlonmcu
+[submodule "thesis"]
+	path = thesis
+	url = https://git@sharelatex.tum.de/git/670804292a2b1a7579a64d94
